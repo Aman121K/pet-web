@@ -77,14 +77,52 @@ function ChevronDown(props) {
 
 const navLinkClass = ({ isActive }) =>
   [
-    'relative pb-3 text-[15px] font-medium tracking-tight transition-colors',
+    'relative flex h-[53px] items-center text-[12px] font-normal leading-[14px] tracking-normal transition-colors',
     isActive ? 'text-ink' : 'text-ink/70 hover:text-ink',
   ].join(' ');
 
 const navUnderline = (isActive) =>
   isActive ? (
-    <span className="absolute bottom-0 left-0 right-0 h-[2px] bg-ink" />
+    <span className="absolute bottom-[13px] left-0 right-0 h-[1px] bg-ink" />
   ) : null;
+
+function HeaderSearch({ className = '' }) {
+  return (
+    <div className={`flex items-center ${className}`}>
+      <input
+        type="search"
+        placeholder="Search..."
+        className="h-8 w-full rounded-none rounded-l-[2px] border border-line bg-white px-3 text-[12px] font-normal leading-[14px] tracking-normal text-ink outline-none placeholder:text-[#9d9d9d] focus:border-ink/30"
+      />
+      <button
+        type="button"
+        className="inline-flex h-8 w-9 items-center justify-center rounded-none rounded-r-[2px] bg-ink text-white transition hover:bg-black/90"
+        aria-label="Search"
+      >
+        <IconSearch className="h-[15px] w-[15px]" />
+      </button>
+    </div>
+  );
+}
+
+function HeaderFeature({ href, icon, title, subtitle, className = '' }) {
+  return (
+    <Link
+      to={href}
+      className={`flex items-center gap-4 text-ink transition hover:text-ink/70 ${className}`}
+    >
+      <img src={icon} alt="" className="h-9 w-9 shrink-0 object-contain" />
+      <div className="leading-none">
+        <p className="text-[12px] font-medium leading-[14px] tracking-normal text-ink">
+          {title}
+        </p>
+        <p className="mt-[2px] text-[12px] font-normal leading-[14px] tracking-normal text-[#6A6A6A]">
+          {subtitle}
+        </p>
+      </div>
+    </Link>
+  );
+}
 
 export function Header() {
   const [shopOpen, setShopOpen] = useState(false);
@@ -103,63 +141,48 @@ export function Header() {
   return (
     <header className="sticky top-0 z-40 bg-white">
       <div className="border-b border-line">
-        <div className="mx-auto flex h-[78px] max-w-[1200px] items-center gap-4 px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto flex h-[82px] max-w-[1344px] items-center gap-4 px-4 sm:px-6 xl:px-0">
           <Link to="/" className="flex items-center gap-3">
             <img
               src={logo}
               alt="Pet SQUARE"
-              className="h-10 w-10 rounded-md"
+              className="h-8 w-8 rounded-[2px]"
             />
-            <span className="text-[20px] font-semibold tracking-[0.22em] text-ink">
+            <span className="text-[24px] font-medium leading-[29px] tracking-normal text-ink">
               PET SQUARE
             </span>
           </Link>
 
-          <div className="mx-auto hidden min-w-0 max-w-[520px] flex-1 md:flex">
-            <div className="flex w-full items-center">
-              <input
-                type="search"
-                placeholder="Search..."
-                className="h-10 w-full rounded-none rounded-l-md border border-line bg-white px-3 text-[14px] text-ink placeholder:text-muted/80 outline-none focus:border-ink/25"
-              />
-              <button
-                type="button"
-                className="inline-flex h-10 w-11 items-center justify-center rounded-none rounded-r-md bg-ink text-white"
-                aria-label="Search"
-              >
-                <IconSearch className="h-5 w-5" />
-              </button>
-            </div>
-          </div>
+          <HeaderSearch className="ml-auto hidden w-[255px] md:flex" />
 
-          <div className="ml-auto flex items-center gap-2">
+          <div className="flex items-center gap-2">
             <button
               type="button"
-              className="inline-flex h-10 w-10 items-center justify-center border border-line bg-white text-ink transition hover:bg-surface"
+              className="inline-flex h-8 w-8 items-center justify-center border border-line bg-white text-ink transition hover:bg-surface"
               aria-label="Cart"
             >
-              <IconCart className="h-6 w-6" />
+              <IconCart className="h-[18px] w-[18px]" />
             </button>
             <Link
               to="/create-account"
-              className="hidden h-10 items-center gap-2 border border-line bg-white px-3 text-[12px] font-semibold tracking-wide text-ink transition hover:bg-surface sm:inline-flex"
+              className="hidden h-8 items-center gap-2 border border-line bg-white px-3 text-[11px] font-semibold leading-[13px] tracking-normal text-ink transition hover:bg-surface sm:inline-flex"
             >
-              <IconUser className="h-5 w-5" />
+              <IconUser className="h-4 w-4" />
               SIGN IN / REGISTER
             </Link>
             <Link
               to="/create-account"
-              className="inline-flex h-10 w-10 items-center justify-center border border-line bg-white text-ink transition hover:bg-surface sm:hidden"
+              className="inline-flex h-8 w-8 items-center justify-center border border-line bg-white text-ink transition hover:bg-surface sm:hidden"
               aria-label="Sign in"
             >
-              <IconUser className="h-6 w-6" />
+              <IconUser className="h-[18px] w-[18px]" />
             </Link>
           </div>
         </div>
       </div>
 
-      <div className="border-t border-line/80">
-        <nav className="mx-auto flex max-w-[1200px] items-center justify-center gap-x-8 px-4 py-0 sm:px-6 lg:gap-x-10 lg:px-8">
+      <div className="border-b border-line">
+        <nav className="mx-auto flex h-[53px] max-w-[1344px] items-center justify-center gap-x-[45px] px-4 sm:px-6 xl:px-0">
           <NavLink to="/" end className={navLinkClass}>
             {(p) => (
               <>
@@ -173,7 +196,7 @@ export function Header() {
             <button
               type="button"
               onClick={() => setShopOpen((v) => !v)}
-              className="relative flex items-center gap-1 pb-3 text-[15px] font-medium tracking-tight text-ink/70 transition hover:text-ink"
+              className="relative flex h-[53px] items-center gap-1 text-[12px] font-normal leading-[14px] tracking-normal text-ink/70 transition hover:text-ink"
               aria-expanded={shopOpen}
             >
               Shop
@@ -182,7 +205,7 @@ export function Header() {
               />
             </button>
             {shopOpen && (
-              <div className="absolute left-0 top-full z-50 mt-1 min-w-[200px] rounded-lg border border-line bg-white py-2 shadow-modal">
+              <div className="absolute left-0 top-full z-50 mt-1 min-w-[190px] rounded-[2px] border border-line bg-white py-2 shadow-modal">
                 <Link
                   to="/shop"
                   className="block px-4 py-2 text-[14px] text-ink hover:bg-surface"
@@ -220,7 +243,7 @@ export function Header() {
           <NavLink to="/faq" className={navLinkClass}>
             {(p) => (
               <>
-                FAQ
+                FAQ's
                 {navUnderline(p.isActive)}
               </>
             )}
@@ -236,22 +259,34 @@ export function Header() {
         </nav>
       </div>
 
+      <div className="hidden h-[96px] border-b border-line bg-white md:block">
+        <div className="mx-auto grid h-full max-w-[1344px] grid-cols-3 items-center px-4 sm:px-6 xl:px-0">
+          <HeaderFeature
+            href="/checkout"
+            icon="/safe-secure.svg"
+            title="Safe & Secure Shopping"
+            subtitle="Your best choice"
+          />
+          <HeaderFeature
+            href="/shop"
+            icon="/next-day.svg"
+            title="Next day Delivery"
+            subtitle="Worry free returns"
+            className="justify-center"
+          />
+          <HeaderFeature
+            href="/shop"
+            icon="/verified-icon.svg"
+            title="100% verified CBD"
+            subtitle="5 stars reviews products"
+            className="justify-end"
+          />
+        </div>
+      </div>
+
       <div className="border-b border-line md:hidden">
         <div className="mx-auto max-w-[1200px] px-4 py-3 sm:px-6">
-          <div className="flex w-full items-center">
-            <input
-              type="search"
-              placeholder="Search..."
-              className="h-10 w-full rounded-none rounded-l-md border border-line bg-white px-3 text-[14px] outline-none focus:border-ink/25"
-            />
-            <button
-              type="button"
-              className="inline-flex h-10 w-11 items-center justify-center rounded-none rounded-r-md bg-ink text-white"
-              aria-label="Search"
-            >
-              <IconSearch className="h-5 w-5" />
-            </button>
-          </div>
+          <HeaderSearch className="w-full" />
         </div>
       </div>
     </header>

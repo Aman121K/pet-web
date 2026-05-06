@@ -4,13 +4,13 @@ export default {
   theme: {
     extend: {
       colors: {
-        ink: '#111111',
-        muted: '#6b7280',
+        ink: '#1C1C1C',
+        muted: '#6A6A6A',
         line: '#e8e8e8',
         surface: '#f7f7f7',
       },
       fontFamily: {
-        sans: ['"DM Sans"', 'system-ui', 'sans-serif'],
+        sans: ['Graphik', '"DM Sans"', 'Arial', 'sans-serif'],
       },
       boxShadow: {
         modal: '0 24px 80px rgba(17, 17, 17, 0.12)',
