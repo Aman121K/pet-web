@@ -1,36 +1,46 @@
 import pick1 from '../../assets/pets/home/pick-1.jpg';
 import pick2 from '../../assets/pets/home/pick-2.jpg';
-import pick3 from '../../assets/pets/home/pick-3.jpg';
 import product1 from '../../assets/pets/product-1.jpg';
+import product2 from '../../assets/pets/product-2.jpg';
+import { ProductCard } from './ProductCard.jsx';
+import { SectionHeading } from './SectionHeading.jsx';
 
 const picks = [
   {
-    img: pick1,
+    id: 'victorian-cage-white',
+    image: product1,
     title: 'Platinum Open Victorian Top with Plastic Base Bird Cage',
     brand: 'Canagan',
-    price: '$221.00',
     compareAt: '$222.74',
+    price: '$221.00',
+    quantity: 5,
   },
   {
-    img: pick2,
-    title: 'Premium House Bed for Small Dogs',
-    brand: 'Pet Square',
-    price: '$94.99',
-    compareAt: '$119.00',
-  },
-  {
-    img: pick3,
-    title: 'Healthy nutrition dry food',
+    id: 'victorian-cage-house',
+    image: product2,
+    title: 'Platinum Open Victorian Top with Plastic Base Bird Cage',
     brand: 'Canagan',
-    price: '$48.50',
-    compareAt: '$59.00',
+    compareAt: '$222.74',
+    price: '$221.00',
+    quantity: 5,
   },
   {
-    img: product1,
-    title: 'Natural cat food with salmon and vegetables',
-    brand: 'Pet Square',
-    price: '$36.25',
-    compareAt: '$42.00',
+    id: 'victorian-cage-dog',
+    image: pick1,
+    title: 'Platinum Open Victorian Top with Plastic Base Bird Cage',
+    brand: 'Canagan',
+    compareAt: '$222.74',
+    price: '$221.00',
+    quantity: 5,
+  },
+  {
+    id: 'victorian-cage-puppy',
+    image: pick2,
+    title: 'Platinum Open Victorian Top with Plastic Base Bird Cage',
+    brand: 'Canagan',
+    compareAt: '$222.74',
+    price: '$221.00',
+    quantity: 5,
   },
 ];
 
@@ -59,65 +69,42 @@ function Arrow({ direction }) {
   );
 }
 
-function Card(p) {
-  return (
-    <article className="flex h-full min-h-[420px] flex-col border border-line bg-white">
-      <div className="h-[220px] bg-surface">
-        <img src={p.img} alt="" className="h-full w-full object-cover" />
-      </div>
-      <div className="flex flex-1 flex-col p-4">
-        <h3 className="text-[14px] font-semibold leading-snug text-ink line-clamp-2">
-          {p.title}
-        </h3>
-        <p className="mt-2 text-[12px] text-muted">{p.brand}</p>
-        <div className="mt-3 flex items-baseline gap-2">
-          <span className="text-[14px] font-semibold text-ink">{p.price}</span>
-          <span className="text-[12px] text-muted line-through">{p.compareAt}</span>
-        </div>
-        <div className="mt-auto flex items-center gap-3 pt-4">
-          <div className="flex h-9 items-center border border-line bg-white">
-            <button className="h-9 w-9 text-ink/70 hover:bg-surface" type="button">
-              −
-            </button>
-            <div className="w-10 text-center text-[13px] font-semibold text-ink">1</div>
-            <button className="h-9 w-9 text-ink/70 hover:bg-surface" type="button">
-              +
-            </button>
-          </div>
-          <button
-            type="button"
-            className="h-9 flex-1 bg-ink px-4 text-[12px] font-semibold tracking-wider text-white"
-          >
-            ADD TO CART
-          </button>
-        </div>
-      </div>
-    </article>
-  );
-}
-
 export function TopPicks() {
   return (
-    <section className="relative h-auto border-b border-line bg-white md:h-[768px]">
-      <div className="mx-auto h-full max-w-[1440px] px-6 py-16 md:px-12 md:py-0">
-        <h2 className="text-center text-[34px] font-semibold leading-[40px] tracking-normal text-ink md:pt-24 lg:text-[40px] lg:leading-[44px]">
-          Featured Products
-        </h2>
+    <section className="relative h-auto border-b border-line bg-[rgba(246,246,246,0.5)] xl:h-[768px]">
+      <div className="relative mx-auto flex h-full max-w-[1440px] flex-col items-center px-6 py-16 xl:px-12 xl:py-24">
+        <SectionHeading>Our top picks for your pets</SectionHeading>
+
         <button
           type="button"
-          className="mx-auto mt-4 flex h-[42px] items-center justify-center border border-line px-5 text-[12px] font-semibold leading-[14px] tracking-normal text-ink transition hover:bg-surface md:absolute md:right-[74px] md:top-24 md:mt-0"
+          className="mt-5 flex h-[42px] w-[128px] items-center justify-center gap-[10px] text-[13px] font-semibold leading-[16px] tracking-normal text-ink transition hover:text-black xl:absolute xl:right-[74px] xl:top-[98px] xl:mt-0"
         >
-          View all products
+          View all
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden className="h-[14px] w-[14px]">
+            <path
+              d="M5 12h14m-6-6 6 6-6 6"
+              stroke="currentColor"
+              strokeWidth="1.8"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
         </button>
 
-        <div className="mt-12 flex items-center gap-2 md:mt-14">
-          <Arrow direction="prev" />
-          <div className="grid min-h-[476px] flex-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {picks.map((p) => (
-              <Card key={p.title} {...p} />
+        <div className="mt-[56px] w-full overflow-x-auto xl:relative xl:h-[476px] xl:max-w-[1344px] xl:overflow-visible">
+          <div className="hidden xl:absolute xl:left-0 xl:top-[207.5px] xl:block">
+            <Arrow direction="prev" />
+          </div>
+
+          <div className="flex min-w-max gap-6 xl:absolute xl:left-12 xl:top-0 xl:h-[476px] xl:w-[1248px]">
+            {picks.map((product) => (
+              <ProductCard key={product.id} {...product} />
             ))}
           </div>
-          <Arrow direction="next" />
+
+          <div className="hidden xl:absolute xl:right-0 xl:top-[207.5px] xl:block">
+            <Arrow direction="next" />
+          </div>
         </div>
       </div>
     </section>
