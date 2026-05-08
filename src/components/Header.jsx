@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { Menu } from 'lucide-react';
 import { Link, NavLink } from 'react-router-dom';
 import logo from '../assets/logo.svg';
 
@@ -141,21 +142,21 @@ export function Header() {
   return (
     <header className="sticky top-0 z-40 bg-white">
       <div className="border-b border-line">
-        <div className="mx-auto flex h-[82px] max-w-[1344px] items-center gap-4 px-4 sm:px-6 xl:px-0">
-          <Link to="/" className="flex items-center gap-3">
+        <div className="relative mx-auto flex h-[80px] max-w-[1344px] items-center gap-3 px-4 pr-[136px] md:h-[82px] md:gap-4 md:px-6 xl:px-0">
+          <Link to="/" className="flex min-w-0 shrink items-center gap-2 md:gap-3">
             <img
               src={logo}
               alt="Pet SQUARE"
-              className="h-8 w-8 rounded-[2px]"
+              className="h-6 w-6 shrink-0 rounded-[2px] md:h-8 md:w-8"
             />
-            <span className="text-[24px] font-medium leading-[29px] tracking-normal text-ink">
+            <span className="whitespace-nowrap text-[18px] font-medium leading-[22px] tracking-normal text-ink md:text-[24px] md:leading-[29px]">
               PET SQUARE
             </span>
           </Link>
 
           <HeaderSearch className="ml-auto hidden w-[255px] md:flex" />
 
-          <div className="flex items-center gap-2">
+          <div className="ml-auto hidden items-center gap-2 md:flex">
             <button
               type="button"
               className="inline-flex h-8 w-8 items-center justify-center border border-line bg-white text-ink transition hover:bg-surface"
@@ -178,10 +179,44 @@ export function Header() {
               <IconUser className="h-[18px] w-[18px]" />
             </Link>
           </div>
+
+          <div
+            className="items-center gap-1 md:hidden"
+            style={{
+              position: 'absolute',
+              right: 16,
+              top: '50%',
+              transform: 'translateY(-50%)',
+              display: 'flex',
+              width: 112,
+            }}
+          >
+            <button
+              type="button"
+              className="inline-flex h-10 w-10 items-center justify-center bg-ink text-white"
+              aria-label="Search"
+            >
+              <IconSearch className="h-5 w-5" />
+            </button>
+            <Link
+              to="/create-account"
+              className="inline-flex h-10 w-10 items-center justify-center border border-ink bg-white text-ink"
+              aria-label="Sign in"
+            >
+              <IconUser className="h-5 w-5" />
+            </Link>
+            <button
+              type="button"
+              className="inline-flex h-10 w-6 items-center justify-center bg-white text-ink"
+              aria-label="Open menu"
+            >
+              <Menu aria-hidden size={25} strokeWidth={2} />
+            </button>
+          </div>
         </div>
       </div>
 
-      <div className="border-b border-line">
+      <div className="hidden border-b border-line md:block">
         <nav className="mx-auto flex h-[53px] max-w-[1344px] items-center justify-center gap-x-[45px] px-4 sm:px-6 xl:px-0">
           <NavLink to="/" end className={navLinkClass}>
             {(p) => (
@@ -284,9 +319,30 @@ export function Header() {
         </div>
       </div>
 
-      <div className="border-b border-line md:hidden">
-        <div className="mx-auto max-w-[1200px] px-4 py-3 sm:px-6">
-          <HeaderSearch className="w-full" />
+      <div className="border-b border-line bg-white md:hidden">
+        <div className="flex h-[61px] items-center overflow-hidden">
+          <div className="flex min-w-max items-center gap-10">
+            <HeaderFeature
+              href="/checkout"
+              icon="/safe-secure.svg"
+              title="Safe & Secure Shopping"
+              subtitle="Your best choice"
+              className="-ml-10 opacity-30"
+            />
+            <HeaderFeature
+              href="/shop"
+              icon="/next-day.svg"
+              title="Next day Delivery"
+              subtitle="Worry free returns"
+            />
+            <HeaderFeature
+              href="/shop"
+              icon="/verified-icon.svg"
+              title="100% verified CBD"
+              subtitle="5 stars reviews products"
+              className="opacity-30"
+            />
+          </div>
         </div>
       </div>
     </header>

@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { SectionShell } from './SectionShell.jsx';
 import { subscribeEmail } from '../../api.js';
 
 export function MailingList() {
@@ -23,31 +22,47 @@ export function MailingList() {
   }
 
   return (
-    <SectionShell className="bg-white py-12">
-      <div className="mx-auto max-w-[820px] border border-line bg-white p-8 text-center">
-        <h2 className="text-[14px] font-semibold text-ink">
-          Join our mailing list for exclusive updates!
-        </h2>
-        <form onSubmit={onSubmit} className="mx-auto mt-5 flex max-w-[560px] gap-3">
+    <section className="bg-surface py-[72px]">
+      <div className="mx-auto flex max-w-[1440px] flex-col items-center gap-[46px] px-4 sm:px-8 md:px-16">
+
+        {/* Text group */}
+        <div className="flex flex-col items-center gap-3 text-center">
+          <h2 className="text-[24px] font-semibold leading-[1.1] text-ink">
+            Join our mailing list for exclusive updates!
+          </h2>
+          <p className="text-[18px] font-normal leading-6 text-muted">
+            Sign up to our newsletter and receive exclusive discounts and deals
+          </p>
+        </div>
+
+        {/* Form */}
+        <form
+          onSubmit={onSubmit}
+          className="flex w-full max-w-[650px] flex-col gap-3 sm:flex-row"
+        >
           <input
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
             type="email"
             placeholder="Your email address"
-            className="h-10 flex-1 border border-line px-3 text-[13px] outline-none focus:border-ink/30"
+            className="h-[50px] flex-1 border border-[#d1d1d1] bg-white px-4 text-[15px] font-normal text-ink placeholder:text-muted outline-none focus:border-ink/40"
           />
           <button
             type="submit"
             disabled={loading}
-            className="h-10 bg-ink px-6 text-[12px] font-semibold tracking-wider text-white disabled:opacity-60"
+            className="h-[50px] shrink-0 bg-ink px-8 text-[13px] font-semibold uppercase tracking-[0.08em] text-white transition-opacity disabled:opacity-60"
           >
-            SUBSCRIBE
+            Subscribe
           </button>
         </form>
-        {status ? <p className="mt-3 text-[12px] text-muted">{status}</p> : null}
+
+        {status ? (
+          <p className="text-[13px] text-muted">{status}</p>
+        ) : null}
+
       </div>
-    </SectionShell>
+    </section>
   );
 }
 

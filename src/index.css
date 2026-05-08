@@ -35,4 +35,10 @@
     @apply font-sans text-[15px] leading-normal tracking-normal;
     font-synthesis-weight: none;
   }
+
+  html,
+  body,
+  #root {
+    overflow-x: hidden;
+  }
 }
