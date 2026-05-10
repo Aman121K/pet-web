@@ -44,23 +44,23 @@ export function NewsletterModal() {
 
   return (
     <div
-      className="fixed inset-0 z-[60] flex items-center justify-center bg-black/45 p-4"
+      className="fixed inset-0 z-[60] flex items-center justify-center bg-black/55 p-4"
       role="dialog"
       aria-modal="true"
       aria-labelledby={labelId}
     >
-      <div className="relative w-full max-w-modal overflow-hidden rounded-[2px] border border-line bg-white shadow-modal">
+      <div className="relative w-full max-w-[654px] overflow-hidden border-[4px] border-[#1ea0ff] bg-white shadow-modal">
         <button
           type="button"
           onClick={close}
-          className="absolute right-3 top-3 z-10 inline-flex h-7 w-7 items-center justify-center text-ink/55 transition hover:bg-surface hover:text-ink"
+          className="absolute right-[8px] top-[6px] z-10 inline-flex h-6 w-6 items-center justify-center text-[#4a4a4a] transition hover:text-black"
           aria-label="Close"
         >
-          <span className="text-[18px] leading-none">&times;</span>
+          <span className="text-[14px] leading-none">×</span>
         </button>
 
         <div className="flex h-auto flex-col md:h-[300px] md:flex-row">
-          <div className="relative h-44 w-full shrink-0 md:h-auto md:w-[50%]">
+          <div className="relative h-[180px] w-full shrink-0 md:h-full md:w-[300px]">
             <img
               src={modalLeftImg}
               alt=""
@@ -68,45 +68,47 @@ export function NewsletterModal() {
             />
           </div>
 
-          <div className="flex flex-1 flex-col justify-center px-7 py-6 md:w-[50%] md:px-10">
+          <div className="flex flex-1 flex-col justify-center px-5 py-5 md:w-[354px] md:px-9 md:py-0">
             <h2
               id={labelId}
-              className="text-center text-[22px] font-semibold leading-snug tracking-tight text-ink sm:text-[24px]"
+              className="text-center text-[42px] font-semibold leading-[34px] tracking-[-0.02em] text-ink md:text-[40px]"
             >
-              Subscribe to Our Newsletter
+              <span className="block text-[23px] leading-[26px]">Subcribe to Our</span>
+              <span className="block text-[39px] leading-[38px] md:text-[38px]">Newsletter</span>
             </h2>
-            <p className="mt-3 text-center text-[12.5px] leading-relaxed text-muted sm:text-[13px]">
+            <p className="mt-3 text-center text-[11px] leading-[16px] text-[#666] md:mt-4">
               Subscribe to our <span className="font-semibold text-ink">newsletter</span>{' '}
-              and Save your <span className="font-semibold text-ink">20% money</span> with
+              and Save your <span className="font-semibold text-ink">20%
+              money</span> with
               discount code today.
             </p>
 
-            <form onSubmit={onSubmit} className="mt-5">
-              <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+            <form onSubmit={onSubmit} className="mt-4 md:mt-5">
+              <div className="flex items-center gap-2">
                 <input
                   type="email"
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="Enter your email"
-                  className="h-9 w-full flex-1 rounded-full border border-line bg-white px-4 text-[12.5px] text-ink outline-none placeholder:text-muted/70 focus:border-ink/25 sm:min-w-0"
+                  className="h-[30px] w-full min-w-0 flex-1 rounded-full border border-[#d7d7d7] bg-white px-3 text-[10px] text-ink outline-none placeholder:text-[#9c9c9c] focus:border-ink/25"
                 />
                 <button
                   type="submit"
                   disabled={loading}
-                  className="h-9 shrink-0 rounded-full bg-ink px-6 text-[12px] font-semibold text-white transition hover:bg-ink/90 disabled:opacity-60 sm:w-[132px]"
+                  className="h-[30px] w-[96px] shrink-0 rounded-full bg-ink px-4 text-[10px] font-semibold text-white transition hover:bg-ink/90 disabled:opacity-60"
                 >
                   {loading ? '…' : 'Subscribe'}
                 </button>
               </div>
               {status ? (
-                <p className="mt-2 text-[13px] text-muted" role="status">
+                <p className="mt-2 text-[11px] text-muted" role="status">
                   {status}
                 </p>
               ) : null}
             </form>
 
-            <label className="mt-5 flex cursor-pointer items-center justify-center gap-2 text-[11.5px] text-muted">
+            <label className="mt-4 flex cursor-pointer items-center justify-center gap-1.5 text-[10px] text-[#8b8b8b] md:mt-5">
               <input
                 type="checkbox"
                 checked={hideAgain}
@@ -118,7 +120,7 @@ export function NewsletterModal() {
                     else window.localStorage.removeItem(STORAGE_KEY);
                   }
                 }}
-                className="h-3.5 w-3.5 rounded border-line text-ink focus:ring-ink"
+                className="h-3 w-3 rounded border-[#d0d0d0] text-ink focus:ring-ink"
               />
               Do not show this window
             </label>

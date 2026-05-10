@@ -18,6 +18,20 @@ export default {
       maxWidth: {
         modal: '654px',
       },
+      keyframes: {
+        'slide-in-right': {
+          '0%':   { opacity: '0', transform: 'translateX(56px)' },
+          '100%': { opacity: '1', transform: 'translateX(0)' },
+        },
+        'slide-in-left': {
+          '0%':   { opacity: '0', transform: 'translateX(-56px)' },
+          '100%': { opacity: '1', transform: 'translateX(0)' },
+        },
+      },
+      animation: {
+        'slide-in-right': 'slide-in-right 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) both',
+        'slide-in-left':  'slide-in-left  0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) both',
+      },
     },
   },
   plugins: [],

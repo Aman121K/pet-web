@@ -1,163 +1,156 @@
-import { useEffect, useState } from 'react';
-import { createOrder, fetchProducts, getUserToken, validateDiscount } from '../api.js';
-import { FeatureBar } from '../components/FeatureBar.jsx';
+import { useMemo, useState } from 'react';
+import { Link } from 'react-router-dom';
+import product1 from '../assets/pets/product-1.jpg';
+import product2 from '../assets/pets/product-2.jpg';
 
-function Input({ id, label, placeholder }) {
+const initialItems = [
+  {
+    id: 1,
+    title: 'Platinum Open Victorian Top with Plastic Base Bird Cage',
+    price: 100,
+    qty: 5,
+    image: product1,
+  },
+  {
+    id: 2,
+    title: 'Platinum Open Victorian Top with Plastic Base Bird Cage',
+    price: 100,
+    qty: 5,
+    image: product2,
+  },
+];
+
+function QtyControl({ qty, onDec, onInc }) {
   return (
-    <div>
-      <label htmlFor={id} className="text-[13px] font-semibold tracking-wide text-ink/80">
-        {label}
-      </label>
-      <input
-        id={id}
-        placeholder={placeholder}
-        className="mt-1 h-11 w-full rounded-lg border border-line px-3 text-[14px] outline-none focus:border-ink/25 focus:ring-2 focus:ring-ink/10"
-      />
+    <div className="inline-flex h-6 items-center border border-line bg-white">
+      <button type="button" onClick={onDec} className="h-full w-6 text-[12px] text-muted">-</button>
+      <span className="inline-flex h-full min-w-[22px] items-center justify-center text-[11px] text-ink">{qty}</span>
+      <button type="button" onClick={onInc} className="h-full w-6 text-[12px] text-ink">+</button>
     </div>
   );
 }
 
+function CartRow({ item, compact = false, onRemove, onDec, onInc }) {
+  return (
+    <article className={`flex items-start gap-3 border-b border-line ${compact ? 'py-3' : 'py-4'}`}>
+      <img src={item.image} alt={item.title} className={`${compact ? 'h-[56px] w-[56px]' : 'h-[96px] w-[96px]'} border border-line object-cover`} />
+      <div className="min-w-0 flex-1">
+        <h3 className={`${compact ? 'text-[13px]' : 'text-[20px]'} line-clamp-2 font-semibold leading-[1.2] text-ink`}>
+          {item.title}
+        </h3>
+        <div className={`mt-2 flex items-center gap-2 ${compact ? 'text-[11px]' : 'text-[13px]'} text-muted`}>
+          <span>Quantity ({item.qty})</span>
+          <QtyControl qty={item.qty} onDec={onDec} onInc={onInc} />
+          <span className="text-ink">${item.price.toFixed(0)}</span>
+        </div>
+      </div>
+      <button type="button" onClick={onRemove} className={`${compact ? 'text-[11px]' : 'text-[12px]'} text-muted hover:text-ink`}>
+        {compact ? '×' : 'Remove'}
+      </button>
+    </article>
+  );
+}
+
 export function Checkout() {
-  const [product, setProduct] = useState(null);
-  const [status, setStatus] = useState('');
-  const [discountCode, setDiscountCode] = useState('');
-  const [discountAmount, setDiscountAmount] = useState(0);
+  const [items, setItems] = useState(initialItems);
 
-  useEffect(() => {
-    fetchProducts()
-      .then((rows) => setProduct(rows?.[0] || null))
-      .catch(() => setProduct(null));
-  }, []);
+  const subtotal = useMemo(
+    () => items.reduce((sum, item) => sum + item.price * item.qty, 0),
+    [items]
+  );
 
-  async function onPlaceOrder() {
-    if (!getUserToken()) {
-      setStatus('Please login first to place order.');
-      return;
-    }
-    if (!product?._id) {
-      setStatus('No product available for checkout.');
-      return;
-    }
-    try {
-      const order = await createOrder({
-        items: [{ productId: product._id, qty: 1 }],
-        discountCode,
-        shippingAddress: {
-          name: 'Demo Customer',
-          email: 'customer@example.com',
-          line1: '123 Pet Street',
-          city: 'San Francisco',
-          zip: '94103',
-          country: 'US',
-        },
-      });
-      setStatus(`Order placed: ${order.orderNo}`);
-    } catch (e) {
-      setStatus(e.message);
-    }
+  function changeQty(id, delta) {
+    setItems((prev) =>
+      prev.map((item) =>
+        item.id === id ? { ...item, qty: Math.max(1, item.qty + delta) } : item
+      )
+    );
   }
 
-  const price = Number(product?.price || 24);
-  const shipping = price >= 100 ? 0 : 6;
-  const taxable = Math.max(0, price - discountAmount);
-  const tax = Number((taxable * 0.05).toFixed(2));
-  const total = Number((taxable + shipping + tax).toFixed(2));
-
-  async function onApplyDiscount() {
-    setStatus('');
-    try {
-      const result = await validateDiscount(discountCode, price);
-      setDiscountAmount(Number(result.discountAmount || 0));
-      setStatus(`Discount applied: -$${Number(result.discountAmount || 0).toFixed(2)}`);
-    } catch (e) {
-      setDiscountAmount(0);
-      setStatus(e.message);
-    }
+  function removeItem(id) {
+    setItems((prev) => prev.filter((item) => item.id !== id));
   }
 
   return (
-    <>
-      <FeatureBar />
-      <section className="mx-auto max-w-[1200px] px-4 py-10 sm:px-6 lg:px-8 lg:py-14">
-        <h1 className="text-[30px] font-semibold tracking-tight text-ink">Checkout</h1>
+    <section className="min-h-[calc(100vh-125px)] bg-[#454545] p-4 md:p-8">
+      <div className="mx-auto max-w-[1200px]">
+        <h1 className="text-[34px] font-medium text-[#b7b7b7] md:text-[48px]">Shopping Cart</h1>
 
-        <div className="mt-7 grid gap-8 lg:grid-cols-[1.35fr,0.9fr]">
-          <form className="space-y-6 rounded-2xl border border-line bg-white p-6 sm:p-8">
-            <div>
-              <h2 className="text-[18px] font-semibold text-ink">Shipping details</h2>
-              <div className="mt-4 grid gap-4 sm:grid-cols-2">
-                <Input id="fname" label="First name" placeholder="Ava" />
-                <Input id="lname" label="Last name" placeholder="Johnson" />
-                <div className="sm:col-span-2">
-                  <Input id="address" label="Address" placeholder="123 Pet Street" />
-                </div>
-                <Input id="city" label="City" placeholder="San Francisco" />
-                <Input id="zip" label="ZIP code" placeholder="94103" />
-              </div>
+        <div className="mt-4 grid min-h-[680px] overflow-hidden bg-[#6f6f6f] md:grid-cols-[1fr_610px]">
+          <div className="hidden md:block" />
+
+          <aside className="flex h-full flex-col bg-[#ececef]">
+            <div className="flex h-14 items-center justify-between border-b border-[#b8b8b8] px-4">
+              <p className="text-[12px] font-semibold text-ink">Shopping Cart</p>
+              <button type="button" className="text-[18px] text-ink">×</button>
             </div>
 
-            <div>
-              <h2 className="text-[18px] font-semibold text-ink">Payment</h2>
-              <div className="mt-4 grid gap-4 sm:grid-cols-2">
-                <div className="sm:col-span-2">
-                  <Input id="card" label="Card number" placeholder="1234 5678 9012 3456" />
-                </div>
-                <Input id="exp" label="Expiry" placeholder="MM/YY" />
-                <Input id="cvv" label="CVV" placeholder="123" />
-              </div>
+            <div className="hidden border-b border-[#b8b8b8] px-4 md:block">
+              {items.slice(0, 1).map((item) => (
+                <CartRow
+                  key={item.id}
+                  item={item}
+                  onRemove={() => removeItem(item.id)}
+                  onDec={() => changeQty(item.id, -1)}
+                  onInc={() => changeQty(item.id, 1)}
+                />
+              ))}
             </div>
-          </form>
 
-          <aside className="h-fit rounded-2xl border border-line bg-surface p-6 sm:p-8">
-            <h2 className="text-[18px] font-semibold text-ink">Order summary</h2>
-            <ul className="mt-4 space-y-3 text-[14px] text-muted">
-              <li className="flex items-center justify-between">
-                <span>{product?.name || 'Premium Salmon Bites'} x1</span>
-                <span className="text-ink">${price.toFixed(2)}</span>
-              </li>
-              <li className="flex items-center justify-between">
-                <span>Shipping</span>
-                <span className="text-ink">${shipping.toFixed(2)}</span>
-              </li>
-              <li className="flex items-center justify-between">
-                <span>Discount</span>
-                <span className="text-ink">-${discountAmount.toFixed(2)}</span>
-              </li>
-              <li className="flex items-center justify-between">
-                <span>Tax</span>
-                <span className="text-ink">${tax.toFixed(2)}</span>
-              </li>
-            </ul>
-            <div className="mt-4 flex gap-2">
-              <input
-                value={discountCode}
-                onChange={(e) => setDiscountCode(e.target.value.toUpperCase())}
-                placeholder="Discount code"
-                className="h-10 flex-1 rounded-lg border border-line px-3 text-[13px]"
-              />
-              <button
-                type="button"
-                onClick={onApplyDiscount}
-                className="h-10 rounded-lg border border-line bg-white px-4 text-[12px] font-semibold text-ink"
-              >
-                Apply
-              </button>
+            <div className="hidden border-b border-[#b8b8b8] px-4 py-3 md:flex md:items-center md:justify-between">
+              <span className="text-[30px] text-ink">Subtotal</span>
+              <span className="text-[30px] font-semibold text-ink">${subtotal.toFixed(2)}</span>
             </div>
-            <div className="mt-5 flex items-center justify-between border-t border-line pt-4">
-              <span className="text-[14px] font-semibold text-ink">Total</span>
-              <span className="text-[22px] font-semibold text-ink">${total.toFixed(2)}</span>
+
+            <div className="hidden h-[120px] border-b border-[#b8b8b8] px-4 py-4 md:block">
+              <p className="text-[22px] text-[#a4a4a4]">Gift Message</p>
             </div>
-            <button
-              type="button"
-              onClick={onPlaceOrder}
-              className="mt-6 h-11 w-full rounded-lg bg-ink text-[14px] font-semibold text-white transition hover:bg-ink/90"
-            >
-              Place order
+
+            <div className="hidden flex-1 items-end justify-center px-4 pb-6 text-center md:flex">
+              <p className="text-[11px] text-muted">
+                Shipping &amp; taxes calculated at checkout
+                <br />
+                Free standard shipping within Kyiv
+              </p>
+            </div>
+
+            <button type="button" className="hidden h-12 bg-ink text-[12px] font-semibold tracking-wide text-white md:block">
+              CHECK OUT
             </button>
-            {status ? <p className="mt-3 text-[13px] text-muted">{status}</p> : null}
+
+            <div className="flex flex-1 flex-col px-3 pb-3 md:hidden">
+              <div className="flex-1 overflow-y-auto">
+                {items.map((item) => (
+                  <CartRow
+                    key={item.id}
+                    compact
+                    item={item}
+                    onRemove={() => removeItem(item.id)}
+                    onDec={() => changeQty(item.id, -1)}
+                    onInc={() => changeQty(item.id, 1)}
+                  />
+                ))}
+              </div>
+
+              <div className="mt-3 flex items-center justify-between text-[12px] text-ink">
+                <span>{items.length} Product</span>
+                <span>${subtotal.toFixed(2)}</span>
+              </div>
+
+              <button type="button" className="mt-2 h-10 bg-ink text-[12px] font-semibold text-white">
+                CHECK OUT
+              </button>
+
+              <Link
+                to="/shop"
+                className="mt-2 inline-flex h-10 items-center justify-center border border-line bg-white text-[12px] font-semibold text-ink"
+              >
+                GO TO CART
+              </Link>
+            </div>
           </aside>
         </div>
-      </section>
-    </>
+      </div>
+    </section>
   );
 }

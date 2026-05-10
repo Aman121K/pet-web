@@ -1,6 +1,13 @@
 import { useEffect, useRef, useState } from 'react';
+import { Menu } from 'lucide-react';
 import { Link, NavLink } from 'react-router-dom';
-import logo from '../assets/logo.svg';
+import { openCartDrawer } from './CartDrawer.jsx';
+import logoIcon from '../assets/Frame 29.png';
+import logoIcon2x from '../assets/Frame 29@2x.png';
+import logoIcon3x from '../assets/Frame 29@3x.png';
+import logoWordmark from '../assets/Pet Square.png';
+import logoWordmark2x from '../assets/Pet Square@2x.png';
+import logoWordmark3x from '../assets/Pet Square@3x.png';
 
 function IconSearch(props) {
   return (
@@ -133,6 +140,7 @@ function HeaderSearch({ className = '' }) {
 export function Header() {
   const [shopOpen, setShopOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [mobileShopOpen, setMobileShopOpen] = useState(false);
   const shopRef = useRef(null);
 
   useEffect(() => {
@@ -155,34 +163,30 @@ export function Header() {
   return (
     <header className="sticky top-0 z-40 bg-white">
       <div className="border-b border-line">
-        <div className="mx-auto flex h-[72px] max-w-[1344px] items-center gap-3 px-4 sm:px-6 xl:px-0">
-          <button
-            type="button"
-            className="inline-flex h-9 w-9 items-center justify-center border border-line text-ink lg:hidden"
-            aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
-            onClick={() => setMobileOpen((v) => !v)}
-          >
-            {mobileOpen ? <IconClose className="h-5 w-5" /> : <IconMenu className="h-5 w-5" />}
-          </button>
-
+        <div className="relative mx-auto flex h-[72px] max-w-[1344px] items-center gap-3 px-4 sm:px-6 xl:px-0">
           <Link to="/" className="flex items-center gap-2 sm:gap-3" onClick={() => setMobileOpen(false)}>
             <img
-              src={logo}
-              alt="Pet SQUARE"
-              className="h-8 w-8 rounded-[2px]"
+              src={logoIcon}
+              alt="Pet SQUARE icon"
+              srcSet={`${logoIcon2x} 2x, ${logoIcon3x} 3x`}
+              className="h-[26px] w-[26px] shrink-0 sm:h-[30px] sm:w-[30px] md:h-[34px] md:w-[34px]"
             />
-            <span className="text-[20px] font-medium leading-[1.1] tracking-normal text-ink sm:text-[24px]">
-              PET SQUARE
-            </span>
+            <img
+              src={logoWordmark}
+              alt="Pet SQUARE"
+              srcSet={`${logoWordmark2x} 2x, ${logoWordmark3x} 3x`}
+              className="h-[18px] w-auto shrink-0 sm:h-[20px] md:h-[24px]"
+            />
           </Link>
 
           <HeaderSearch className="ml-auto hidden w-[255px] md:flex" />
 
-          <div className="ml-auto flex items-center gap-2 md:ml-0">
+          <div className="ml-auto hidden items-center gap-2 md:ml-0 md:flex">
             <button
               type="button"
               className="inline-flex h-8 w-8 items-center justify-center border border-line bg-white text-ink transition hover:bg-surface"
               aria-label="Cart"
+              onClick={openCartDrawer}
             >
               <IconCart className="h-[18px] w-[18px]" />
             </button>
@@ -200,6 +204,28 @@ export function Header() {
             >
               <IconUser className="h-[18px] w-[18px]" />
             </Link>
+          </div>
+
+          <div className="ml-auto flex items-center gap-1 md:hidden">
+            <button
+              type="button"
+              className="inline-flex h-10 w-10 items-center justify-center bg-ink text-white"
+              aria-label="Search"
+            >
+              <IconSearch className="h-5 w-5" />
+            </button>
+            <button
+              type="button"
+              className="inline-flex h-10 w-10 items-center justify-center bg-white text-ink"
+              aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
+              onClick={() => setMobileOpen((v) => !v)}
+            >
+              {mobileOpen ? (
+                <IconClose className="h-5 w-5" />
+              ) : (
+                <Menu aria-hidden size={25} strokeWidth={2} />
+              )}
+            </button>
           </div>
         </div>
       </div>
@@ -261,27 +287,117 @@ export function Header() {
       </div>
 
       {mobileOpen ? (
-        <div className="absolute inset-x-0 top-[72px] z-50 border-b border-line bg-white shadow-lg lg:hidden">
-          <div className="mx-auto max-w-[1344px] px-4 py-4 sm:px-6">
-            <HeaderSearch className="mb-4" />
-            <nav className="grid gap-1">
-              {navItems.map((item) => (
+        <div className="fixed inset-0 z-[70] bg-black text-white md:hidden">
+          <div className="flex h-full flex-col">
+            <div className="flex items-center justify-end px-4 pt-6">
+              <button
+                type="button"
+                onClick={() => {
+                  setMobileOpen(false);
+                  setMobileShopOpen(false);
+                }}
+                className="inline-flex h-10 w-10 items-center justify-center text-white"
+                aria-label="Close menu"
+              >
+                <IconClose className="h-7 w-7" />
+              </button>
+            </div>
+
+            <nav className="mt-8 px-5">
+              <NavLink
+                to="/"
+                end
+                onClick={() => {
+                  setMobileOpen(false);
+                  setMobileShopOpen(false);
+                }}
+                className="block py-3 text-[36px] font-normal leading-[1.12] text-white sm:text-[40px]"
+              >
+                Home
+              </NavLink>
+
+              <button
+                type="button"
+                onClick={() => setMobileShopOpen((v) => !v)}
+                className="flex w-full items-center justify-between py-3 text-left text-[36px] font-normal leading-[1.12] text-white sm:text-[40px]"
+              >
+                <span>Shop</span>
+                <ChevronDown className={`h-8 w-8 transition ${mobileShopOpen ? 'rotate-180' : ''}`} />
+              </button>
+
+              {mobileShopOpen ? (
+                <div className="mt-2 overflow-hidden border border-[#d8d8d8] bg-white text-ink">
+                  {[
+                    { name: 'Dog', image: '/pets/home/tile-dog.jpg' },
+                    { name: 'Cat', image: '/pets/home/tile-cat.jpg', active: true },
+                    { name: 'Food' },
+                    { name: 'Toys', active: true },
+                    { name: 'Grooming' },
+                    { name: 'Clothing' },
+                    { name: 'Fish', image: '/pets/home/tile-fish.jpg' },
+                    { name: 'Bird', image: '/pets/home/blog-1.jpg' },
+                    { name: 'Chicken', image: '/pets/home/pick-1.jpg' },
+                  ].map((row) => (
+                    <Link
+                      key={row.name}
+                      to="/shop"
+                      onClick={() => {
+                        setMobileOpen(false);
+                        setMobileShopOpen(false);
+                      }}
+                      className={`flex h-14 items-center border-b border-[#e5e5e5] px-3 text-[14px] ${
+                        row.active ? 'bg-[#1c1c1c] text-white' : 'bg-white text-[#666]'
+                      }`}
+                    >
+                      {row.image ? (
+                        <img src={row.image} alt="" className="mr-3 h-[40px] w-[64px] object-cover" />
+                      ) : (
+                        <span className="mr-3 inline-block w-[64px]" />
+                      )}
+                      <span className="flex-1">{row.name}</span>
+                      {row.name === 'Cat' ? <span className="text-[24px]">→</span> : null}
+                    </Link>
+                  ))}
+                </div>
+              ) : null}
+
+              {navItems.slice(2).map((item) => (
                 <NavLink
                   key={item.to}
                   to={item.to}
-                  end={item.end}
-                  onClick={() => setMobileOpen(false)}
-                  className={({ isActive }) =>
-                    `rounded-sm px-3 py-2 text-[14px] ${isActive ? 'bg-surface text-ink' : 'text-ink/75 hover:bg-surface hover:text-ink'}`
-                  }
+                  onClick={() => {
+                    setMobileOpen(false);
+                    setMobileShopOpen(false);
+                  }}
+                  className="block py-3 text-[36px] font-normal leading-[1.12] text-white sm:text-[40px]"
                 >
-                  {item.label}
+                  {item.label.replace("FAQ's", 'FAQ')}
                 </NavLink>
               ))}
             </nav>
           </div>
         </div>
       ) : null}
+
+      <div className="fixed inset-x-0 bottom-0 z-40 border-t border-line bg-white px-4 py-3 md:hidden">
+        <div className="mx-auto flex max-w-[360px] items-center gap-3">
+          <button
+            type="button"
+            className="inline-flex h-10 w-10 items-center justify-center bg-ink text-white"
+            aria-label="Cart"
+            onClick={openCartDrawer}
+          >
+            <IconCart className="h-[18px] w-[18px]" />
+          </button>
+          <Link
+            to="/create-account"
+            className="inline-flex h-10 flex-1 items-center justify-center gap-2 border border-ink bg-white px-3 text-[12px] font-semibold leading-[1] text-ink"
+          >
+            <IconUser className="h-5 w-5" />
+            <span>SIGN IN / REGISTER</span>
+          </Link>
+        </div>
+      </div>
     </header>
   );
 }

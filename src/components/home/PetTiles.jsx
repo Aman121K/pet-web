@@ -1,38 +1,63 @@
 import tileDog from '../../assets/pets/home/tile-dog.jpg';
 import tileCat from '../../assets/pets/home/tile-cat.jpg';
+import tileCat2 from '../../assets/pets/home/tile-cat-2.jpg';
 import tileFish from '../../assets/pets/home/tile-fish.jpg';
-import { SectionShell } from './SectionShell.jsx';
 
-function Tile({ img, label }) {
+function ShopBadge({ children }) {
   return (
-    <div className="relative overflow-hidden border border-line bg-surface">
-      <img src={img} alt="" className="h-full w-full object-cover" />
-      <div className="absolute left-3 top-3 border border-line bg-white px-2 py-1 text-[10px] font-semibold tracking-wider text-ink">
-        {label.toUpperCase()}
-      </div>
+    <div className="absolute left-5 top-5 inline-flex h-[38px] items-center border border-ink bg-white px-4 text-[13px] font-semibold uppercase leading-none tracking-[0.06em] text-ink">
+      {children}
+    </div>
+  );
+}
+
+function Tile({ img, alt = '', label, className = '' }) {
+  return (
+    <div className={`relative overflow-hidden bg-[rgba(28,28,28,0.5)] ${className}`}>
+      <img src={img} alt={alt} className="h-full w-full object-cover" />
+      <ShopBadge>{label}</ShopBadge>
     </div>
   );
 }
 
 export function PetTiles() {
   return (
-    <SectionShell className="bg-white py-10">
-      <div className="grid gap-6 lg:grid-cols-3">
-        <div className="lg:col-span-2">
-          <div className="grid gap-6 sm:grid-cols-2">
-            <div className="h-[260px] sm:h-[320px]">
-              <Tile img={tileDog} label="Shop for dog" />
-            </div>
-            <div className="h-[260px] sm:h-[320px]">
-              <Tile img={tileCat} label="Shop for cat" />
-            </div>
+    <section className="bg-white">
+      <div className="mx-auto max-w-[1440px] px-4 pb-16 md:px-[22px] md:pb-24">
+        <div className="grid gap-4 md:flex md:gap-5">
+          {/* Left — Dog */}
+          <Tile
+            img={tileDog}
+            alt="Dog"
+            label="Shop Dog Food"
+            className="h-[380px] w-full md:h-[610px] md:w-[452px] md:flex-none"
+          />
+
+          {/* Middle — Cat (top) + Bird (bottom) */}
+          <div className="flex w-full flex-col gap-4 md:w-[452px] md:flex-none md:gap-[18px]">
+            <Tile
+              img={tileCat}
+              alt="Cat"
+              label="Shop Cat Toy"
+              className="h-[248px] md:h-[294px]"
+            />
+            <Tile
+              img={tileCat2}
+              alt="Bird"
+              label="Shop Bird"
+              className="h-[248px] md:h-[294px]"
+            />
           </div>
-        </div>
-        <div className="h-[546px] lg:h-auto">
-          <Tile img={tileFish} label="Shop for fish" />
+
+          {/* Right — Fish */}
+          <Tile
+            img={tileFish}
+            alt="Fish"
+            label="Shop Fish Toy"
+            className="h-[380px] w-full md:h-[610px] md:w-[452px] md:flex-none"
+          />
         </div>
       </div>
-    </SectionShell>
+    </section>
   );
 }
-

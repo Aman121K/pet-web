@@ -2,6 +2,7 @@ import { Route, Routes } from 'react-router-dom';
 import { Footer } from './components/Footer.jsx';
 import { Header } from './components/Header.jsx';
 import { NewsletterModal } from './components/NewsletterModal.jsx';
+import { CartDrawer } from './components/CartDrawer.jsx';
 import { About } from './pages/About.jsx';
 import { Blog } from './pages/Blog.jsx';
 import { Checkout } from './pages/Checkout.jsx';
@@ -37,6 +38,7 @@ export default function App() {
       </main>
       <Footer />
       <NewsletterModal />
+      <CartDrawer />
     </div>
   );
 }

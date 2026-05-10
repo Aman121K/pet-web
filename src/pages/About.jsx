@@ -1,56 +1,59 @@
 import { FeatureBar } from '../components/FeatureBar.jsx';
 import { MailingList } from '../components/home/MailingList.jsx';
+import aboutPortrait from '../assets/pets/about-portrait.png';
+import aboutIcon0 from '../assets/pets/about-icon-0.svg';
+import aboutIcon1 from '../assets/pets/about-icon-1.svg';
+import aboutIcon2 from '../assets/pets/about-icon-2.svg';
+import aboutIcon3 from '../assets/pets/about-icon-3.svg';
+import product2 from '../assets/pets/product-2.jpg';
+import product3 from '../assets/pets/product-3.jpg';
 
 const spotlightImages = [
-  '/images/product-1.jpg',
-  '/images/product-2.jpg',
-  '/images/product-3.jpg',
+  aboutPortrait,
+  product2,
+  product3,
 ];
 
 const values = [
   {
     title: 'Best in Class',
     text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed diam nonumy.',
-    icon: (
-      <path d="M9 13h2V9h10v4h2v10H9V13Zm4 10h6v-6h-6v6Zm2-18h2v4h-2V5Z" />
-    ),
+    iconSrc: aboutIcon0,
   },
   {
     title: 'Authenticity',
     text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed diam nonumy.',
-    icon: <path d="M8 10h6v6H8v-6Zm10 0h6v6h-6v-6ZM8 20h6v6H8v-6Zm10 0h6v6h-6v-6Z" />,
+    iconSrc: aboutIcon1,
   },
   {
     title: 'Email Support',
     text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed diam nonumy.',
-    icon: <path d="M5 9h22v14H5V9Zm2 2v1l9 6 9-6v-1H7Zm18 10V14l-9 6-9-6v7h18Z" />,
+    iconSrc: aboutIcon2,
   },
   {
     title: 'Discounts Available',
     text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed diam nonumy.',
-    icon: <path d="m16 5 3 6 7 1-5 5 1 8-6-3-6 3 1-8-5-5 7-1 3-6Z" />,
+    iconSrc: aboutIcon3,
   },
   {
     title: 'Powerful Marketing',
     text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed diam nonumy.',
-    icon: <path d="M6 14h3l4-4v12l-4-4H6v-4Zm9-2 9-3v14l-9-3V12Z" />,
+    iconSrc: aboutIcon0,
   },
   {
     title: 'Inventory management',
     text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed diam nonumy.',
-    icon: (
-      <path d="M7 8h18v16H7V8Zm2 2v3h14v-3H9Zm0 5v7h14v-7H9Zm2 2h4v3h-4v-3Zm6 0h4v3h-4v-3Z" />
-    ),
+    iconSrc: aboutIcon1,
   },
 ];
 
 const team = [
-  { name: 'Blake Matthews', role: 'CEO & Co-Founder' },
-  { name: 'Jack Newman', role: 'CTO' },
-  { name: 'Sarina Martins', role: 'Marketing' },
-  { name: 'Spencer Wright', role: 'Project management' },
-  { name: 'Caroline Ming', role: 'Sales' },
-  { name: 'Anna Mills', role: 'Design lead' },
+  { name: 'Blake Matthews', role: 'CEO & Co-Founder', image: aboutPortrait },
+  { name: 'Jack Newman', role: 'CTO', image: product2 },
+  { name: 'Sarina Martins', role: 'Marketing', image: product3 },
+  { name: 'Spencer Wright', role: 'Project management', image: aboutPortrait },
+  { name: 'Caroline Ming', role: 'Sales', image: product2 },
+  { name: 'Anna Mills', role: 'Design lead', image: product3 },
 ];
 
 export function About() {
@@ -80,7 +83,9 @@ export function About() {
                 key={src}
                 src={src}
                 alt={`About team scene ${index + 1}`}
-                className="h-[240px] w-full rounded-sm object-cover sm:h-[300px] lg:h-[320px]"
+                className={`h-[240px] w-full rounded-sm object-cover sm:h-[300px] lg:h-[320px] ${
+                  index === 0 ? 'object-top' : ''
+                }`}
               />
             ))}
           </div>
@@ -132,13 +137,7 @@ export function About() {
             <div className="mt-8 grid gap-4 rounded-sm bg-[#EFEFEF] p-5 text-left sm:mt-10 sm:grid-cols-2 sm:gap-5 sm:p-8 lg:grid-cols-3">
               {values.map((value) => (
                 <article key={value.title} className="rounded-sm bg-white p-5">
-                  <svg
-                    viewBox="0 0 32 32"
-                    className="h-6 w-6 fill-ink"
-                    aria-hidden
-                  >
-                    {value.icon}
-                  </svg>
+                  <img src={value.iconSrc} alt="" className="h-8 w-8 object-contain" />
                   <h3 className="mt-3 text-[17px] font-semibold text-ink">{value.title}</h3>
                   <p className="mt-2 text-[13px] leading-6 text-muted">{value.text}</p>
                 </article>
@@ -162,6 +161,11 @@ export function About() {
                   key={member.name}
                   className="rounded-sm border border-line bg-[#DCDCDC] p-4 transition hover:bg-[#D3D3D3]"
                 >
+                  <img
+                    src={member.image}
+                    alt={member.name}
+                    className="mb-3 h-[180px] w-full rounded-sm object-cover object-top"
+                  />
                   <h3 className="text-[14px] font-semibold text-ink">{member.name}</h3>
                   <p className="mt-1 text-[12px] text-muted">{member.role}</p>
                 </article>
