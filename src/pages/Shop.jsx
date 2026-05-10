@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { fetchProducts } from '../api.js';
 import { FeatureBar } from '../components/FeatureBar.jsx';
+import { Link } from 'react-router-dom';
 
 function formatPrice(n) {
   return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(n);
@@ -45,12 +46,12 @@ export function Shop() {
         <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {items.map((p) => (
             <article
-              key={p.id}
+              key={p._id}
               className="overflow-hidden rounded-[12px] border border-line bg-white shadow-[0_8px_30px_rgba(17,17,17,0.06)]"
             >
               <div className="aspect-[4/3] bg-surface">
                 <img
-                  src={p.image_url || ''}
+                  src={p.imageUrl || p.image_url || ''}
                   alt=""
                   className="h-full w-full object-cover"
                 />
@@ -59,12 +60,12 @@ export function Shop() {
                 <h2 className="text-[17px] font-semibold tracking-tight text-ink">{p.name}</h2>
                 <p className="mt-2 line-clamp-2 text-[14px] text-muted">{p.description}</p>
                 <p className="mt-4 text-[18px] font-semibold text-ink">{formatPrice(p.price)}</p>
-                <button
-                  type="button"
-                  className="mt-4 h-10 w-full rounded-lg bg-ink text-[14px] font-semibold text-white transition hover:bg-ink/90"
+                <Link
+                  to={`/product-details/${p.slug}`}
+                  className="mt-4 inline-flex h-10 w-full items-center justify-center rounded-lg bg-ink text-[14px] font-semibold text-white transition hover:bg-ink/90"
                 >
-                  Add to cart
-                </button>
+                  View details
+                </Link>
               </div>
             </article>
           ))}

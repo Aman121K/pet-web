@@ -6,7 +6,7 @@ function Card({ p }) {
   return (
     <article className="border border-line bg-white">
       <div className="aspect-[4/3] bg-surface">
-        <img src={p.image_url} alt="" className="h-full w-full object-cover" />
+        <img src={p.imageUrl || p.image_url} alt="" className="h-full w-full object-cover" />
       </div>
       <div className="p-4">
         <h3 className="text-[14px] font-semibold leading-snug text-ink line-clamp-2">

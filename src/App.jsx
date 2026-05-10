@@ -30,7 +30,7 @@ export default function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/create-account" element={<CreateAccount />} />
-          <Route path="/product-details" element={<ProductDetails />} />
+          <Route path="/product-details/:slug" element={<ProductDetails />} />
           <Route path="/checkout" element={<Checkout />} />
           <Route path="*" element={<ErrorPage />} />
         </Routes>

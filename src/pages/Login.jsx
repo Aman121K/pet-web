@@ -1,7 +1,10 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import { loginCustomer, setUserToken } from '../api.js';
 import { FeatureBar } from '../components/FeatureBar.jsx';
 
-function Field({ id, label, type = 'text', placeholder }) {
+function Field({ id, label, type = 'text', placeholder, value, onChange }) {
   return (
     <div>
       <label htmlFor={id} className="text-[13px] font-semibold tracking-wide text-ink/80">
@@ -11,6 +14,8 @@ function Field({ id, label, type = 'text', placeholder }) {
         id={id}
         type={type}
         placeholder={placeholder}
+        value={value}
+        onChange={onChange}
         className="mt-1 h-11 w-full rounded-lg border border-line bg-white px-3 text-[14px] text-ink outline-none transition focus:border-ink/25 focus:ring-2 focus:ring-ink/10"
       />
     </div>
@@ -18,6 +23,27 @@ function Field({ id, label, type = 'text', placeholder }) {
 }
 
 export function Login() {
+  const navigate = useNavigate();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  async function onSubmit(e) {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
+    try {
+      const data = await loginCustomer({ email, password });
+      setUserToken(data.token);
+      navigate('/checkout');
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  }
+
   return (
     <>
       <FeatureBar />
@@ -37,9 +63,23 @@ export function Login() {
             <h2 className="text-[28px] font-semibold tracking-tight text-ink">Log in</h2>
             <p className="mt-1 text-[14px] text-muted">Use your email and password to continue.</p>
 
-            <form className="mt-6 space-y-4">
-              <Field id="email" label="Email" type="email" placeholder="you@example.com" />
-              <Field id="password" label="Password" type="password" placeholder="••••••••" />
+            <form onSubmit={onSubmit} className="mt-6 space-y-4">
+              <Field
+                id="email"
+                label="Email"
+                type="email"
+                placeholder="you@example.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+              <Field
+                id="password"
+                label="Password"
+                type="password"
+                placeholder="••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
               <div className="flex items-center justify-between text-[13px]">
                 <label className="inline-flex items-center gap-2 text-muted">
                   <input type="checkbox" className="h-4 w-4 rounded border-line" /> Remember me
@@ -49,11 +89,13 @@ export function Login() {
                 </a>
               </div>
               <button
-                type="button"
-                className="h-11 w-full rounded-lg bg-ink text-[14px] font-semibold text-white transition hover:bg-ink/90"
+                type="submit"
+                disabled={loading}
+                className="h-11 w-full rounded-lg bg-ink text-[14px] font-semibold text-white transition hover:bg-ink/90 disabled:opacity-60"
               >
-                Log in
+                {loading ? 'Logging in…' : 'Log in'}
               </button>
+              {error ? <p className="text-[13px] text-red-600">{error}</p> : null}
             </form>
 
             <p className="mt-6 text-[14px] text-muted">

@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { BrandLineup } from '../components/home/BrandLineup.jsx';
 import { TopPicks } from '../components/home/TopPicks.jsx';
 import { Categories } from '../components/home/Categories.jsx';
@@ -7,12 +8,21 @@ import { FaqBlock } from '../components/home/FaqBlock.jsx';
 import { Testimonials } from '../components/home/Testimonials.jsx';
 import { PopularBlogs } from '../components/home/PopularBlogs.jsx';
 import { MailingList } from '../components/home/MailingList.jsx';
+import { fetchBanners } from '../api.js';
 import { Link } from 'react-router-dom';
 
 const heroImage =
   '/fluffy-dog-sitting-blue-home-workout-instruments-with-several-dumbbells-around.png';
 
 export function Home() {
+  const [banner, setBanner] = useState(null);
+
+  useEffect(() => {
+    fetchBanners('home-hero')
+      .then((rows) => setBanner(rows?.[0] || null))
+      .catch(() => setBanner(null));
+  }, []);
+
   return (
     <>
       <section className="border-b border-line bg-white">
@@ -22,17 +32,17 @@ export function Home() {
 
             <div className="relative mx-6 mt-16 h-auto max-w-[720px] border border-white/30 px-7 py-8 text-white sm:mx-12 sm:px-10 sm:py-10 md:ml-[97px] md:mt-20 md:h-[344px] md:w-[720px] md:p-0">
               <h1 className="text-[40px] font-semibold leading-[48px] tracking-normal sm:text-[48px] sm:leading-[58px] md:absolute md:left-10 md:top-10 md:text-[56px] md:leading-[62px]">
-                <span className="block">Discover the best for</span>
-                <span className="mt-4 block">your pets at Pet Square.</span>
+                <span className="block">{banner?.title || 'Discover the best for'}</span>
+                <span className="mt-4 block">{banner?.subtitle || 'your pets at Pet Square.'}</span>
               </h1>
               <p className="mt-[10px] max-w-[419px] text-[15px] font-normal leading-[30px] tracking-normal text-white/72 md:absolute md:left-10 md:top-[204px] md:mt-0 md:text-[16px] md:text-white/70">
                 Lorem Ipsum is simply dummy text of the printing
               </p>
               <Link
-                to="/shop"
+                to={banner?.ctaLink || '/shop'}
                 className="mt-[18px] inline-flex h-[38px] items-center justify-center border border-white/70 px-[16px] text-[14px] font-semibold leading-none tracking-normal text-white transition hover:bg-white/10 md:absolute md:left-10 md:top-[258px] md:mt-0 md:h-[46px] md:w-[133px] md:px-0 md:text-[15px]"
               >
-                SHOP NOW
+                {String(banner?.ctaText || 'SHOP NOW').toUpperCase()}
               </Link>
             </div>
 

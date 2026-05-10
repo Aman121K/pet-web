@@ -61,6 +61,22 @@ function IconUser(props) {
   );
 }
 
+function IconMenu(props) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" aria-hidden {...props}>
+      <path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+function IconClose(props) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" aria-hidden {...props}>
+      <path d="m6 6 12 12M18 6 6 18" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+    </svg>
+  );
+}
+
 function ChevronDown(props) {
   return (
     <svg viewBox="0 0 24 24" fill="none" aria-hidden {...props}>
@@ -74,6 +90,15 @@ function ChevronDown(props) {
     </svg>
   );
 }
+
+const navItems = [
+  { to: '/', label: 'Home', end: true },
+  { to: '/shop', label: 'Shop' },
+  { to: '/about', label: 'About us' },
+  { to: '/blog', label: 'Blog' },
+  { to: '/faq', label: "FAQ's" },
+  { to: '/contact', label: 'Contact us' },
+];
 
 const navLinkClass = ({ isActive }) =>
   [
@@ -105,27 +130,9 @@ function HeaderSearch({ className = '' }) {
   );
 }
 
-function HeaderFeature({ href, icon, title, subtitle, className = '' }) {
-  return (
-    <Link
-      to={href}
-      className={`flex items-center gap-4 text-ink transition hover:text-ink/70 ${className}`}
-    >
-      <img src={icon} alt="" className="h-9 w-9 shrink-0 object-contain" />
-      <div className="leading-none">
-        <p className="text-[12px] font-medium leading-[14px] tracking-normal text-ink">
-          {title}
-        </p>
-        <p className="mt-[2px] text-[12px] font-normal leading-[14px] tracking-normal text-[#6A6A6A]">
-          {subtitle}
-        </p>
-      </div>
-    </Link>
-  );
-}
-
 export function Header() {
   const [shopOpen, setShopOpen] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
   const shopRef = useRef(null);
 
   useEffect(() => {
@@ -138,24 +145,40 @@ export function Header() {
     return () => document.removeEventListener('mousedown', onDoc);
   }, []);
 
+  useEffect(() => {
+    document.body.style.overflow = mobileOpen ? 'hidden' : '';
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [mobileOpen]);
+
   return (
     <header className="sticky top-0 z-40 bg-white">
       <div className="border-b border-line">
-        <div className="mx-auto flex h-[82px] max-w-[1344px] items-center gap-4 px-4 sm:px-6 xl:px-0">
-          <Link to="/" className="flex items-center gap-3">
+        <div className="mx-auto flex h-[72px] max-w-[1344px] items-center gap-3 px-4 sm:px-6 xl:px-0">
+          <button
+            type="button"
+            className="inline-flex h-9 w-9 items-center justify-center border border-line text-ink lg:hidden"
+            aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
+            onClick={() => setMobileOpen((v) => !v)}
+          >
+            {mobileOpen ? <IconClose className="h-5 w-5" /> : <IconMenu className="h-5 w-5" />}
+          </button>
+
+          <Link to="/" className="flex items-center gap-2 sm:gap-3" onClick={() => setMobileOpen(false)}>
             <img
               src={logo}
               alt="Pet SQUARE"
               className="h-8 w-8 rounded-[2px]"
             />
-            <span className="text-[24px] font-medium leading-[29px] tracking-normal text-ink">
+            <span className="text-[20px] font-medium leading-[1.1] tracking-normal text-ink sm:text-[24px]">
               PET SQUARE
             </span>
           </Link>
 
           <HeaderSearch className="ml-auto hidden w-[255px] md:flex" />
 
-          <div className="flex items-center gap-2">
+          <div className="ml-auto flex items-center gap-2 md:ml-0">
             <button
               type="button"
               className="inline-flex h-8 w-8 items-center justify-center border border-line bg-white text-ink transition hover:bg-surface"
@@ -181,7 +204,7 @@ export function Header() {
         </div>
       </div>
 
-      <div className="border-b border-line">
+      <div className="hidden border-b border-line lg:block">
         <nav className="mx-auto flex h-[53px] max-w-[1344px] items-center justify-center gap-x-[45px] px-4 sm:px-6 xl:px-0">
           <NavLink to="/" end className={navLinkClass}>
             {(p) => (
@@ -224,71 +247,41 @@ export function Header() {
             )}
           </div>
 
-          <NavLink to="/about" className={navLinkClass}>
-            {(p) => (
-              <>
-                About us
-                {navUnderline(p.isActive)}
-              </>
-            )}
-          </NavLink>
-          <NavLink to="/blog" className={navLinkClass}>
-            {(p) => (
-              <>
-                Blog
-                {navUnderline(p.isActive)}
-              </>
-            )}
-          </NavLink>
-          <NavLink to="/faq" className={navLinkClass}>
-            {(p) => (
-              <>
-                FAQ's
-                {navUnderline(p.isActive)}
-              </>
-            )}
-          </NavLink>
-          <NavLink to="/contact" className={navLinkClass}>
-            {(p) => (
-              <>
-                Contact us
-                {navUnderline(p.isActive)}
-              </>
-            )}
-          </NavLink>
+          {navItems.slice(2).map((item) => (
+            <NavLink key={item.to} to={item.to} className={navLinkClass}>
+              {(p) => (
+                <>
+                  {item.label}
+                  {navUnderline(p.isActive)}
+                </>
+              )}
+            </NavLink>
+          ))}
         </nav>
       </div>
 
-      <div className="hidden h-[96px] border-b border-line bg-white md:block">
-        <div className="mx-auto grid h-full max-w-[1344px] grid-cols-3 items-center px-4 sm:px-6 xl:px-0">
-          <HeaderFeature
-            href="/checkout"
-            icon="/safe-secure.svg"
-            title="Safe & Secure Shopping"
-            subtitle="Your best choice"
-          />
-          <HeaderFeature
-            href="/shop"
-            icon="/next-day.svg"
-            title="Next day Delivery"
-            subtitle="Worry free returns"
-            className="justify-center"
-          />
-          <HeaderFeature
-            href="/shop"
-            icon="/verified-icon.svg"
-            title="100% verified CBD"
-            subtitle="5 stars reviews products"
-            className="justify-end"
-          />
+      {mobileOpen ? (
+        <div className="absolute inset-x-0 top-[72px] z-50 border-b border-line bg-white shadow-lg lg:hidden">
+          <div className="mx-auto max-w-[1344px] px-4 py-4 sm:px-6">
+            <HeaderSearch className="mb-4" />
+            <nav className="grid gap-1">
+              {navItems.map((item) => (
+                <NavLink
+                  key={item.to}
+                  to={item.to}
+                  end={item.end}
+                  onClick={() => setMobileOpen(false)}
+                  className={({ isActive }) =>
+                    `rounded-sm px-3 py-2 text-[14px] ${isActive ? 'bg-surface text-ink' : 'text-ink/75 hover:bg-surface hover:text-ink'}`
+                  }
+                >
+                  {item.label}
+                </NavLink>
+              ))}
+            </nav>
+          </div>
         </div>
-      </div>
-
-      <div className="border-b border-line md:hidden">
-        <div className="mx-auto max-w-[1200px] px-4 py-3 sm:px-6">
-          <HeaderSearch className="w-full" />
-        </div>
-      </div>
+      ) : null}
     </header>
   );
 }
