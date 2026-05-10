@@ -1,10 +1,12 @@
 import { FeatureBar } from '../components/FeatureBar.jsx';
+import { Link } from 'react-router-dom';
 import blog1 from '../assets/pets/home/blog-1.jpg';
 import blog2 from '../assets/pets/home/blog-2.jpg';
 import blog3 from '../assets/pets/home/blog-3.jpg';
 
 const posts = [
   {
+    slug: 'pet-nutrition-101',
     title: 'Pet Nutrition 101: Building Better Meals',
     excerpt:
       'Learn how to read labels, pick balanced ingredients, and avoid common nutrition mistakes for dogs and cats.',
@@ -13,6 +15,7 @@ const posts = [
     image: blog1,
   },
   {
+    slug: 'training-basics',
     title: 'Training Basics That Work Every Day',
     excerpt:
       'Simple routines, reward timing, and consistency tips to improve behavior without stress for your pet.',
@@ -21,6 +24,7 @@ const posts = [
     image: blog2,
   },
   {
+    slug: 'cozy-home-for-pets',
     title: 'Designing a Cozy Home Zone for Pets',
     excerpt:
       'From beds to play corners, here are practical ideas to create a safe and calming setup for your companion.',
@@ -63,12 +67,12 @@ export function Blog() {
                     {post.title}
                   </h2>
                   <p className="mt-3 text-[14px] leading-6 text-muted">{post.excerpt}</p>
-                  <button
-                    type="button"
+                  <Link
+                    to={`/blog/${post.slug}`}
                     className="mt-5 inline-flex h-10 items-center justify-center border border-line px-5 text-[12px] font-semibold tracking-[0.08em] text-ink transition hover:bg-surface"
                   >
                     READ MORE
-                  </button>
+                  </Link>
                 </div>
               </article>
             ))}

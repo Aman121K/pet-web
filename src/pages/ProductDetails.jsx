@@ -56,6 +56,7 @@ export function ProductDetails() {
   const [apiProduct, setApiProduct] = useState(null);
   const [qty, setQty] = useState(1);
   const [mainImage, setMainImage] = useState(product1);
+  const [activeTab, setActiveTab] = useState('Specifications');
 
   useEffect(() => {
     let mounted = true;
@@ -145,6 +146,22 @@ export function ProductDetails() {
                 <button type="button" onClick={() => setQty((q) => q + 1)} className="h-8 w-8 border border-line bg-white text-[18px]">+</button>
               </div>
 
+              <div className="mt-4 space-y-3 border-t border-line pt-3 text-[11px] text-muted">
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <p className="font-semibold text-ink">Special Delivery</p>
+                    <p>Free standard shipping. Calculated at checkout.</p>
+                  </div>
+                  <span className="inline-flex h-5 items-center bg-[#dc3e3e] px-2 text-[9px] font-semibold text-white">
+                    Save 20%
+                  </span>
+                </div>
+                <label className="flex items-center gap-2">
+                  <input type="checkbox" className="h-3.5 w-3.5 border border-line" />
+                  Add to cart warranty delivery plan
+                </label>
+              </div>
+
               <button
                 type="button"
                 onClick={() =>
@@ -167,19 +184,80 @@ export function ProductDetails() {
             <h2 className="text-center text-[22px] font-semibold text-ink">Product details</h2>
             <div className="mt-4 grid grid-cols-2 gap-2 text-[11px] md:grid-cols-5">
               {['Specifications', 'Descriptions', 'Product Info', 'Customer feedback', "FAQ's"].map((tab, idx) => (
-                <button key={tab} type="button" className={`h-8 border border-line px-3 ${idx === 0 ? 'bg-[#dcdcdc] text-ink' : 'bg-[#f3f3f3] text-muted'}`}>
+                <button
+                  key={tab}
+                  type="button"
+                  onClick={() => setActiveTab(tab)}
+                  className={`h-8 border border-line px-3 ${
+                    activeTab === tab ? 'bg-[#dcdcdc] text-ink' : 'bg-[#f3f3f3] text-muted'
+                  }`}
+                >
                   {tab}
                 </button>
               ))}
             </div>
 
-            <div className="mt-5 space-y-4 text-[11px] leading-5 text-muted md:text-[12px]">
-              <div className="grid grid-cols-[120px_1fr] gap-2 border-b border-line pb-3"><p className="font-semibold text-ink">PET</p><p>Dog</p></div>
-              <div className="grid grid-cols-[120px_1fr] gap-2 border-b border-line pb-3"><p className="font-semibold text-ink">LIFE STAGE</p><p>Adult</p></div>
-              <div className="grid grid-cols-[120px_1fr] gap-2 border-b border-line pb-3"><p className="font-semibold text-ink">BENEFITS</p><p>Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC.</p></div>
-              <div className="grid grid-cols-[120px_1fr] gap-2 border-b border-line pb-3"><p className="font-semibold text-ink">FEEDING GUIDE</p><p>Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC.</p></div>
-              <div className="grid grid-cols-[120px_1fr] gap-2"><p className="font-semibold text-ink">FOOD TYPE</p><p>Dry</p></div>
-            </div>
+            {activeTab === 'Specifications' ? (
+              <>
+                <div className="mt-5 space-y-4 text-[11px] leading-5 text-muted md:text-[12px]">
+                  <div className="grid grid-cols-[120px_1fr] gap-2 border-b border-line pb-3"><p className="font-semibold text-ink">PET</p><p>Dog</p></div>
+                  <div className="grid grid-cols-[120px_1fr] gap-2 border-b border-line pb-3"><p className="font-semibold text-ink">LIFE STAGE</p><p>Adult</p></div>
+                  <div className="grid grid-cols-[120px_1fr] gap-2 border-b border-line pb-3"><p className="font-semibold text-ink">BENEFITS</p><p>Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC.</p></div>
+                  <div className="grid grid-cols-[120px_1fr] gap-2 border-b border-line pb-3"><p className="font-semibold text-ink">FEEDING GUIDE</p><p>Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC.</p></div>
+                  <div className="grid grid-cols-[120px_1fr] gap-2"><p className="font-semibold text-ink">FOOD TYPE</p><p>Dry</p></div>
+                </div>
+                <div className="mt-8 border-t border-line pt-6 text-[11px] leading-5 text-muted md:text-[12px]">
+                  <h3 className="text-[12px] font-semibold uppercase tracking-wide text-ink">Offer Details</h3>
+                  <p className="mt-3">
+                    Lorem ipsum is a dummy stream made from a specimen and measured by industry. Lorem
+                    ipsum has been the industry's standard text ever since the 1500s, when an unknown
+                    printer took a galley of type and scrambled it to make a type specimen book.
+                  </p>
+                  <p className="mt-3">
+                    It has survived not only five centuries, but also the leap into electronic
+                    typesetting, remaining essentially unchanged. It was popularized in the 1960s with
+                    the release of Letraset sheets containing lorem ipsum passages.
+                  </p>
+                </div>
+              </>
+            ) : null}
+
+            {activeTab === 'Descriptions' ? (
+              <div className="mt-6 text-[12px] leading-6 text-muted md:text-[13px]">
+                <p>
+                  {product.description}
+                </p>
+                <p className="mt-3">
+                  Pro - Large exceptional bouquet composed of a selection of David Austin roses,
+                  known for their beauty and subtle fragrance.
+                </p>
+              </div>
+            ) : null}
+
+            {activeTab === 'Product Info' ? (
+              <div className="mt-6 text-[12px] leading-6 text-muted md:text-[13px]">
+                <p><span className="font-semibold text-ink">SKU:</span> {product.sku}</p>
+                <p className="mt-2"><span className="font-semibold text-ink">Category:</span> {product.category}</p>
+                <p className="mt-2"><span className="font-semibold text-ink">Base Price:</span> ${product.price.toFixed(2)}</p>
+              </div>
+            ) : null}
+
+            {activeTab === 'Customer feedback' ? (
+              <div className="mt-6 text-[12px] leading-6 text-muted md:text-[13px]">
+                <p>4.8 / 5 average rating from verified buyers.</p>
+                <p className="mt-2">“Great quality and fast delivery.”</p>
+                <p className="mt-2">“My pet loved it, will buy again.”</p>
+              </div>
+            ) : null}
+
+            {activeTab === "FAQ's" ? (
+              <div className="mt-6 text-[12px] leading-6 text-muted md:text-[13px]">
+                <p><span className="font-semibold text-ink">Q:</span> Is this product suitable for adult pets?</p>
+                <p><span className="font-semibold text-ink">A:</span> Yes, it is formulated for adult pets.</p>
+                <p className="mt-3"><span className="font-semibold text-ink">Q:</span> How long is shipping?</p>
+                <p><span className="font-semibold text-ink">A:</span> Standard shipping takes 2-5 business days.</p>
+              </div>
+            ) : null}
           </section>
 
           <section className="mt-8">

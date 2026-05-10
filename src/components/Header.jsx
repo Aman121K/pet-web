@@ -2,12 +2,18 @@ import { useEffect, useRef, useState } from 'react';
 import { Menu } from 'lucide-react';
 import { Link, NavLink } from 'react-router-dom';
 import { openCartDrawer } from './CartDrawer.jsx';
+import { COUNT_EVENT } from './CartDrawer.jsx';
 import logoIcon from '../assets/Frame 29.png';
 import logoIcon2x from '../assets/Frame 29@2x.png';
 import logoIcon3x from '../assets/Frame 29@3x.png';
 import logoWordmark from '../assets/Pet Square.png';
 import logoWordmark2x from '../assets/Pet Square@2x.png';
 import logoWordmark3x from '../assets/Pet Square@3x.png';
+import tileDog from '../assets/pets/home/tile-dog.jpg';
+import tileCat from '../assets/pets/home/tile-cat.jpg';
+import tileFish from '../assets/pets/home/tile-fish.jpg';
+import blog1 from '../assets/pets/home/blog-1.jpg';
+import pick1 from '../assets/pets/home/pick-1.jpg';
 
 function IconSearch(props) {
   return (
@@ -141,6 +147,7 @@ export function Header() {
   const [shopOpen, setShopOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [mobileShopOpen, setMobileShopOpen] = useState(false);
+  const [cartCount, setCartCount] = useState(0);
   const shopRef = useRef(null);
 
   useEffect(() => {
@@ -159,6 +166,22 @@ export function Header() {
       document.body.style.overflow = '';
     };
   }, [mobileOpen]);
+
+  useEffect(() => {
+    function onCount(e) {
+      setCartCount(Number(e?.detail?.count || 0));
+    }
+    window.addEventListener(COUNT_EVENT, onCount);
+    try {
+      const raw = window.localStorage.getItem('pet-cart-items');
+      if (raw) {
+        const items = JSON.parse(raw);
+        const count = items.reduce((sum, item) => sum + Number(item.qty || 0), 0);
+        setCartCount(count);
+      }
+    } catch {}
+    return () => window.removeEventListener(COUNT_EVENT, onCount);
+  }, []);
 
   return (
     <header className="sticky top-0 z-40 bg-white">
@@ -184,17 +207,22 @@ export function Header() {
           <div className="ml-auto hidden items-center gap-2 md:ml-0 md:flex">
             <button
               type="button"
-              className="inline-flex h-8 w-8 items-center justify-center border border-line bg-white text-ink transition hover:bg-surface"
+              className="relative inline-flex h-8 w-8 items-center justify-center border border-ink bg-ink text-white transition hover:bg-[#2a2a2a]"
               aria-label="Cart"
               onClick={openCartDrawer}
             >
               <IconCart className="h-[18px] w-[18px]" />
+              {cartCount > 0 ? (
+                <span className="absolute -right-1 -top-1 inline-flex h-4 min-w-[16px] items-center justify-center rounded-full border border-ink bg-white px-1 text-[10px] font-semibold text-ink">
+                  {cartCount > 99 ? '99+' : cartCount}
+                </span>
+              ) : null}
             </button>
             <Link
               to="/create-account"
               className="hidden h-8 items-center gap-2 border border-line bg-white px-3 text-[11px] font-semibold leading-[13px] tracking-normal text-ink transition hover:bg-surface sm:inline-flex"
             >
-              <IconUser className="h-4 w-4" />
+              <img src="/user--avatar 1.svg" alt="" className="h-4 w-4 object-contain" />
               SIGN IN / REGISTER
             </Link>
             <Link
@@ -202,7 +230,7 @@ export function Header() {
               className="inline-flex h-8 w-8 items-center justify-center border border-line bg-white text-ink transition hover:bg-surface sm:hidden"
               aria-label="Sign in"
             >
-              <IconUser className="h-[18px] w-[18px]" />
+              <img src="/user--avatar 1.svg" alt="" className="h-[18px] w-[18px] object-contain" />
             </Link>
           </div>
 
@@ -328,15 +356,15 @@ export function Header() {
               {mobileShopOpen ? (
                 <div className="mt-2 overflow-hidden border border-[#d8d8d8] bg-white text-ink">
                   {[
-                    { name: 'Dog', image: '/pets/home/tile-dog.jpg' },
-                    { name: 'Cat', image: '/pets/home/tile-cat.jpg', active: true },
+                    { name: 'Dog', image: tileDog },
+                    { name: 'Cat', image: tileCat, active: true },
                     { name: 'Food' },
                     { name: 'Toys', active: true },
                     { name: 'Grooming' },
                     { name: 'Clothing' },
-                    { name: 'Fish', image: '/pets/home/tile-fish.jpg' },
-                    { name: 'Bird', image: '/pets/home/blog-1.jpg' },
-                    { name: 'Chicken', image: '/pets/home/pick-1.jpg' },
+                    { name: 'Fish', image: tileFish },
+                    { name: 'Bird', image: blog1 },
+                    { name: 'Chicken', image: pick1 },
                   ].map((row) => (
                     <Link
                       key={row.name}
@@ -383,17 +411,22 @@ export function Header() {
         <div className="mx-auto flex max-w-[360px] items-center gap-3">
           <button
             type="button"
-            className="inline-flex h-10 w-10 items-center justify-center bg-ink text-white"
+            className="relative inline-flex h-10 w-10 items-center justify-center bg-ink text-white"
             aria-label="Cart"
             onClick={openCartDrawer}
           >
             <IconCart className="h-[18px] w-[18px]" />
+            {cartCount > 0 ? (
+              <span className="absolute -right-1 -top-1 inline-flex h-4 min-w-[16px] items-center justify-center rounded-full bg-white px-1 text-[10px] font-semibold text-ink">
+                {cartCount > 99 ? '99+' : cartCount}
+              </span>
+            ) : null}
           </button>
           <Link
             to="/create-account"
             className="inline-flex h-10 flex-1 items-center justify-center gap-2 border border-ink bg-white px-3 text-[12px] font-semibold leading-[1] text-ink"
           >
-            <IconUser className="h-5 w-5" />
+            <img src="/user--avatar 1.svg" alt="" className="h-5 w-5 object-contain" />
             <span>SIGN IN / REGISTER</span>
           </Link>
         </div>

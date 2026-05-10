@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom';
 
 const OPEN_EVENT = 'pet:cart-open';
 const ADD_EVENT = 'pet:add-to-cart';
+const COUNT_EVENT = 'pet:cart-count';
+const STORAGE_KEY = 'pet-cart-items';
 
 function normalizePayload(payload = {}) {
   return {
@@ -16,7 +18,16 @@ function normalizePayload(payload = {}) {
 
 export function CartDrawer() {
   const [open, setOpen] = useState(false);
-  const [items, setItems] = useState([]);
+  const [toast, setToast] = useState('');
+  const [items, setItems] = useState(() => {
+    try {
+      const raw = window.localStorage.getItem(STORAGE_KEY);
+      return raw ? JSON.parse(raw) : [];
+    } catch {
+      return [];
+    }
+  });
+  const [giftMessage, setGiftMessage] = useState('');
 
   useEffect(() => {
     function onOpen() {
@@ -30,6 +41,7 @@ export function CartDrawer() {
         if (idx === -1) return [...prev, item];
         return prev.map((p, i) => (i === idx ? { ...p, qty: p.qty + item.qty } : p));
       });
+      setToast('Product added to cart');
       setOpen(true);
     }
 
@@ -48,6 +60,20 @@ export function CartDrawer() {
     };
   }, [open]);
 
+  useEffect(() => {
+    if (!toast) return;
+    const t = window.setTimeout(() => setToast(''), 1800);
+    return () => window.clearTimeout(t);
+  }, [toast]);
+
+  useEffect(() => {
+    try {
+      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+    } catch {}
+    const count = items.reduce((sum, item) => sum + Number(item.qty || 0), 0);
+    window.dispatchEvent(new CustomEvent(COUNT_EVENT, { detail: { count } }));
+  }, [items]);
+
   const subtotal = useMemo(
     () => items.reduce((sum, item) => sum + item.price * item.qty, 0),
     [items]
@@ -65,10 +91,22 @@ export function CartDrawer() {
     setItems((prev) => prev.filter((item) => item.id !== id));
   }
 
-  if (!open) return null;
+  if (!open) {
+    return toast ? (
+      <div className="fixed right-4 top-4 z-[95] rounded-sm bg-ink px-4 py-3 text-[12px] font-semibold text-white shadow-xl">
+        {toast}
+      </div>
+    ) : null;
+  }
 
   return (
-    <div className="fixed inset-0 z-[90]">
+    <>
+      {toast ? (
+        <div className="fixed right-4 top-4 z-[95] rounded-sm bg-ink px-4 py-3 text-[12px] font-semibold text-white shadow-xl">
+          {toast}
+        </div>
+      ) : null}
+      <div className="fixed inset-0 z-[90]">
       <button
         type="button"
         aria-label="Close cart"
@@ -107,6 +145,12 @@ export function CartDrawer() {
         </div>
 
         <div className="border-t border-[#b8b8b8] px-3 py-3">
+          <textarea
+            value={giftMessage}
+            onChange={(e) => setGiftMessage(e.target.value)}
+            placeholder="Gift Message"
+            className="mb-2 h-20 w-full resize-none border border-line bg-white px-3 py-2 text-[12px] outline-none placeholder:text-[#9a9a9a]"
+          />
           <div className="mb-2 flex items-center justify-between text-[12px] text-ink">
             <span>{items.length} Product</span>
             <span>${subtotal.toFixed(2)}</span>
@@ -119,7 +163,8 @@ export function CartDrawer() {
           </button>
         </div>
       </aside>
-    </div>
+      </div>
+    </>
   );
 }
 
@@ -130,3 +175,5 @@ export function openCartDrawer() {
 export function addToCartAndOpen(payload) {
   window.dispatchEvent(new CustomEvent(ADD_EVENT, { detail: payload }));
 }
+
+export { COUNT_EVENT };

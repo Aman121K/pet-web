@@ -1,17 +1,40 @@
-import { FeatureBar } from '../components/FeatureBar.jsx';
+import { MailingList } from '../components/home/MailingList.jsx';
 
-function Input({ id, label, placeholder, type = 'text' }) {
+function ContactIconPin() {
   return (
-    <div>
-      <label className="text-[13px] font-semibold tracking-wide text-ink/80" htmlFor={id}>
-        {label}
-      </label>
-      <input
-        id={id}
-        type={type}
-        placeholder={placeholder}
-        className="mt-1 h-11 w-full rounded-lg border border-line bg-white px-3 text-[14px] outline-none focus:border-ink/25 focus:ring-2 focus:ring-ink/10"
-      />
+    <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" aria-hidden>
+      <path d="M12 21s7-5.8 7-11a7 7 0 1 0-14 0c0 5.2 7 11 7 11Z" stroke="currentColor" strokeWidth="1.5" />
+      <circle cx="12" cy="10" r="2.5" stroke="currentColor" strokeWidth="1.5" />
+    </svg>
+  );
+}
+
+function ContactIconMail() {
+  return (
+    <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" aria-hidden>
+      <rect x="3" y="5" width="18" height="14" stroke="currentColor" strokeWidth="1.5" />
+      <path d="m4 7 8 6 8-6" stroke="currentColor" strokeWidth="1.5" />
+    </svg>
+  );
+}
+
+function ContactIconPhone() {
+  return (
+    <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" aria-hidden>
+      <path d="M19.5 16.5v2a1.5 1.5 0 0 1-1.65 1.5 14.9 14.9 0 0 1-6.49-2.31 14.5 14.5 0 0 1-4.5-4.5A14.9 14.9 0 0 1 4.5 6.7 1.5 1.5 0 0 1 6 5h2a1.5 1.5 0 0 1 1.5 1.29c.11.8.31 1.6.61 2.35a1.5 1.5 0 0 1-.34 1.58l-.84.84a12 12 0 0 0 4.5 4.5l.84-.84a1.5 1.5 0 0 1 1.58-.34c.75.3 1.55.5 2.35.61A1.5 1.5 0 0 1 19.5 16.5Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+function InfoCard({ icon, lines }) {
+  return (
+    <div className="border-b border-line px-5 py-6 text-center last:border-b-0">
+      <div className="mx-auto mb-3 inline-flex h-7 w-7 items-center justify-center text-ink">{icon}</div>
+      {lines.map((line) => (
+        <p key={line} className="text-[12px] leading-5 text-muted">
+          {line}
+        </p>
+      ))}
     </div>
   );
 }
@@ -19,50 +42,81 @@ function Input({ id, label, placeholder, type = 'text' }) {
 export function Contact() {
   return (
     <>
-      <FeatureBar />
-      <section className="mx-auto max-w-[1200px] px-4 py-10 sm:px-6 lg:px-8 lg:py-14">
-        <div className="grid gap-8 lg:grid-cols-[1fr,1.2fr]">
-          <aside className="rounded-2xl border border-line bg-ink p-8 text-white">
-            <h1 className="text-[30px] font-semibold tracking-tight">Contact us</h1>
-            <p className="mt-3 text-[15px] text-white/80">
-              We respond within one business day for order support, delivery updates, or product questions.
-            </p>
-            <ul className="mt-8 space-y-3 text-[14px] text-white/90">
-              <li>support@petsquare.example</li>
-              <li>+1 (000) 000-0000</li>
-              <li>Mon-Fri, 9:00 AM to 6:00 PM</li>
-            </ul>
-          </aside>
-
-          <form className="rounded-2xl border border-line bg-white p-6 sm:p-8">
-            <h2 className="text-[22px] font-semibold tracking-tight text-ink">Send a message</h2>
-            <div className="mt-5 grid gap-4 sm:grid-cols-2">
-              <Input id="first-name" label="First name" placeholder="Ava" />
-              <Input id="last-name" label="Last name" placeholder="Johnson" />
-              <div className="sm:col-span-2">
-                <Input id="email" label="Email" placeholder="ava@example.com" type="email" />
-              </div>
-              <div className="sm:col-span-2">
-                <label className="text-[13px] font-semibold tracking-wide text-ink/80" htmlFor="message">
-                  Message
-                </label>
-                <textarea
-                  id="message"
-                  rows={5}
-                  placeholder="How can we help today?"
-                  className="mt-1 w-full rounded-lg border border-line bg-white px-3 py-2 text-[14px] outline-none focus:border-ink/25 focus:ring-2 focus:ring-ink/10"
-                />
-              </div>
-            </div>
-            <button
-              type="button"
-              className="mt-5 h-11 rounded-lg bg-ink px-6 text-[14px] font-semibold text-white transition hover:bg-ink/90"
-            >
-              Send message
-            </button>
-          </form>
+      <section className="border-b border-line bg-[#f4f4f4]">
+        <div className="mx-auto max-w-[1200px] px-4 py-2 text-[10px] text-muted">
+          Home <span className="px-2">&gt;</span> Contact US
         </div>
       </section>
+
+      <section className="bg-[#efefef] py-8 md:py-10">
+        <div className="mx-auto max-w-[1200px] px-4">
+          <div className="grid gap-4 md:grid-cols-[260px_1fr]">
+            <aside className="border border-line bg-white">
+              <InfoCard
+                icon={<ContactIconPin />}
+                lines={['123 Pet Street, Petville,', 'USA (Dummy)']}
+              />
+              <InfoCard
+                icon={<ContactIconMail />}
+                lines={['contact@petsquare.com', 'petsquare@gmail.com']}
+              />
+              <InfoCard
+                icon={<ContactIconPhone />}
+                lines={['+1 1900-000-000', '+1 1900-000-000']}
+              />
+            </aside>
+
+            <div className="border border-line bg-white px-6 py-6 md:px-8">
+              <h1 className="text-[28px] font-semibold text-ink md:text-[38px]">Just Say Hello!</h1>
+              <p className="mt-2 text-[12px] text-muted md:text-[13px]">
+                Get in touch with our Customer Service team between 9am - 5pm Monday-Friday.
+              </p>
+
+              <div className="mt-5 space-y-2">
+                <div className="grid gap-2 sm:grid-cols-2">
+                  <input
+                    placeholder="Sakshi Agrawal"
+                    className="h-9 border border-line px-3 text-[12px] text-ink outline-none placeholder:text-[#9a9a9a]"
+                  />
+                  <input
+                    placeholder="petsquare@gmail.com"
+                    type="email"
+                    className="h-9 border border-line px-3 text-[12px] text-ink outline-none placeholder:text-[#9a9a9a]"
+                  />
+                </div>
+                <input
+                  placeholder="Hello!"
+                  className="h-9 w-full border border-line px-3 text-[12px] text-ink outline-none placeholder:text-[#9a9a9a]"
+                />
+                <textarea
+                  rows={5}
+                  placeholder="Message"
+                  className="w-full border border-line px-3 py-2 text-[12px] text-ink outline-none placeholder:text-[#9a9a9a]"
+                />
+              </div>
+
+              <button
+                type="button"
+                className="mt-4 h-10 bg-ink px-6 text-[11px] font-semibold tracking-wide text-white"
+              >
+                SEND MESSAGE
+              </button>
+            </div>
+          </div>
+
+          <div className="mt-6 overflow-hidden border border-line bg-white">
+            <iframe
+              title="PetSquare location map"
+              src="https://maps.google.com/maps?q=Petville&t=&z=10&ie=UTF8&iwloc=&output=embed"
+              className="h-[320px] w-full"
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+            />
+          </div>
+        </div>
+      </section>
+
+      <MailingList />
     </>
   );
 }
