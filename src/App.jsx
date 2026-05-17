@@ -20,6 +20,10 @@ import { ProductDetails } from './pages/ProductDetails.jsx';
 import { OrderConfirmation } from './pages/OrderConfirmation.jsx';
 import { Shop } from './pages/Shop.jsx';
 import { ShoppingCart } from './pages/ShoppingCart.jsx';
+import { Shipping } from './pages/Shipping.jsx';
+import { Terms } from './pages/Terms.jsx';
+import { Returns } from './pages/Returns.jsx';
+import { PrivacyPolicy } from './pages/PrivacyPolicy.jsx';
 import { Signup } from './pages/Signup.jsx';
 
 export default function App() {
@@ -46,11 +50,16 @@ export default function App() {
           <Route path="/signup" element={<Signup />} />
           <Route path="/create-account" element={<CreateAccount />} />
           <Route path="/product-details/:slug" element={<ProductDetails />} />
+          <Route path="/products/:slug" element={<ProductDetails />} />
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/checkout/payment" element={<CheckoutPayment />} />
           <Route path="/order-confirmation" element={<OrderConfirmation />} />
           <Route path="/cart" element={<ShoppingCart />} />
           <Route path="/shopping-cart" element={<ShoppingCart />} />
+          <Route path="/shipping" element={<Shipping />} />
+          <Route path="/terms" element={<Terms />} />
+          <Route path="/returns" element={<Returns />} />
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
           <Route path="*" element={<ErrorPage />} />
         </Routes>
         <Footer />

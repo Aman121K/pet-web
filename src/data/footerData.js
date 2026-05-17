@@ -22,10 +22,10 @@ export const navLinks = [
 ];
 
 export const infoLinks = [
-  { label: 'Shipping', href: '#' },
-  { label: 'Terms & Conditions', href: '#' },
-  { label: 'Returns', href: '#' },
-  { label: 'Privacy Policy', href: '#' },
+  { label: 'Shipping', href: '/shipping' },
+  { label: 'Terms & Conditions', href: '/terms' },
+  { label: 'Returns', href: '/returns' },
+  { label: 'Privacy Policy', href: '/privacy-policy' },
 ];
 
 export const categoryLinks = [

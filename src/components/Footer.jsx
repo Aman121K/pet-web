@@ -226,7 +226,7 @@ export function Footer() {
           {/* ── Column 3: Information ── */}
           <div>
             <ColHeading>Information</ColHeading>
-            <LinkList links={infoLinks} internal={false} />
+            <LinkList links={infoLinks} internal />
           </div>
 
           {/* ── Column 4: Categories ── */}

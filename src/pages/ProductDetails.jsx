@@ -4,13 +4,14 @@ import { fetchProductBySlug } from '../api.js';
 import { FeatureBar } from '../components/FeatureBar.jsx';
 import { MailingList } from '../components/home/MailingList.jsx';
 import { addToCartAndOpen } from '../components/CartDrawer.jsx';
+import { SeoHead } from '../components/SeoHead.jsx';
 import product1 from '../assets/pets/product-1.jpg';
 import product2 from '../assets/pets/product-2.jpg';
 import product3 from '../assets/pets/product-3.jpg';
 import pick1 from '../assets/pets/home/pick-1.jpg';
 import infoImage from '../assets/pets/modal-left.jpg';
 
-const thumbs = [product1, infoImage, product3, product1, pick1];
+const fallbackThumbs = [product1, infoImage, product3, product1, pick1];
 
 const related = [
   { image: product1, sale: 1 },
@@ -78,22 +79,71 @@ export function ProductDetails() {
     const title = slugToTitle(slug) || 'Rosy Delight';
     return {
       name: apiProduct?.name || title,
+      slug: apiProduct?.slug || slug,
       category: apiProduct?.category?.name || 'Fresh Food',
       price: Number(apiProduct?.price || 100),
       description:
         apiProduct?.description ||
         'H2 - Large exceptional bouquet composed of a selection of David Austin roses. Large exceptional bouquet composed of a selection of David Austin roses.',
       image: apiProduct?.imageUrl || apiProduct?.image_url || product1,
+      gallery: Array.isArray(apiProduct?.gallery) && apiProduct.gallery.length ? apiProduct.gallery : [],
+      imageAltText: apiProduct?.imageAltText || apiProduct?.name || title,
       sku: apiProduct?.sku || '054359',
+      seoTitle: apiProduct?.seoTitle || `${apiProduct?.name || title} | Pet Store`,
+      seoDescription:
+        apiProduct?.seoDescription ||
+        apiProduct?.description ||
+        `${apiProduct?.name || title} - quality pet product with fast shipping.`,
+      seoKeywords: apiProduct?.seoKeywords || '',
+      seoCanonicalUrl: apiProduct?.seoCanonicalUrl || '',
+      seoOgTitle: apiProduct?.seoOgTitle || '',
+      seoOgDescription: apiProduct?.seoOgDescription || '',
+      seoOgImageUrl: apiProduct?.seoOgImageUrl || '',
+      seoRobots: apiProduct?.seoRobots || 'index,follow',
     };
   }, [apiProduct, slug]);
+
+  const siteUrl = (import.meta.env.VITE_SITE_URL || window.location.origin || '').replace(/\/$/, '');
+  const canonicalUrl = product.seoCanonicalUrl || `${siteUrl}/products/${product.slug || slug}`;
+  const productJsonLd = useMemo(
+    () => ({
+      '@context': 'https://schema.org',
+      '@type': 'Product',
+      name: product.name,
+      image: [product.image],
+      description: product.description,
+      sku: product.sku,
+      offers: {
+        '@type': 'Offer',
+        priceCurrency: 'USD',
+        price: product.price,
+        availability: 'https://schema.org/InStock',
+        url: canonicalUrl,
+      },
+    }),
+    [product, canonicalUrl]
+  );
 
   useEffect(() => {
     setMainImage(product.image || product1);
   }, [product.image]);
 
+  const thumbs = product.gallery.length ? product.gallery : fallbackThumbs;
+
   return (
     <>
+      <SeoHead
+        title={product.seoTitle}
+        description={product.seoDescription}
+        keywords={product.seoKeywords}
+        canonical={canonicalUrl}
+        robots={product.seoRobots}
+        ogTitle={product.seoOgTitle || product.seoTitle}
+        ogDescription={product.seoOgDescription || product.seoDescription}
+        ogImage={product.seoOgImageUrl || product.image}
+      />
+      <script type="application/ld+json">{JSON.stringify(productJsonLd)}</script>
+
       <FeatureBar />
 
       <section className="border-b border-line bg-[#f4f4f4]">
@@ -111,7 +161,7 @@ export function ProductDetails() {
           <div className="grid gap-4 lg:grid-cols-[1.1fr_1fr]">
             <div>
               <div className="overflow-hidden border border-line bg-white">
-                <img src={mainImage} alt={product.name} className="h-[260px] w-full object-cover md:h-[420px]" />
+                <img src={mainImage} alt={product.imageAltText} className="h-[260px] w-full object-cover md:h-[420px]" />
               </div>
               <div className="mt-3 flex items-center gap-2 overflow-x-auto">
                 {thumbs.map((img, i) => (
@@ -121,7 +171,7 @@ export function ProductDetails() {
                     onClick={() => setMainImage(img)}
                     className="h-[56px] w-[56px] shrink-0 overflow-hidden border border-line bg-white"
                   >
-                    <img src={img} alt="" className="h-full w-full object-cover" />
+                    <img src={img} alt={`${product.name} thumbnail ${i + 1}`} className="h-full w-full object-cover" />
                   </button>
                 ))}
               </div>
@@ -132,7 +182,7 @@ export function ProductDetails() {
               <h1 className="mt-2 text-[32px] font-semibold leading-[1.05] text-ink md:text-[44px]">
                 H1 - {product.name} - ${product.price.toFixed(0)}
               </h1>
-              <p className="mt-4 text-[12px] leading-5 text-muted">{product.description}</p>
+              <div className="mt-4 text-[12px] leading-5 text-muted" dangerouslySetInnerHTML={{ __html: product.description }} />
               <p className="mt-2 text-[12px] leading-5 text-muted">
                 Pro - Large exceptional bouquet composed of a selection of David Austin roses, known for their beauty and subtle fragrance.
               </p>
@@ -183,7 +233,7 @@ export function ProductDetails() {
           <section className="mt-8 border border-line bg-white p-4 md:p-7">
             <h2 className="text-center text-[22px] font-semibold text-ink">Product details</h2>
             <div className="mt-4 grid grid-cols-2 gap-2 text-[11px] md:grid-cols-5">
-              {['Specifications', 'Descriptions', 'Product Info', 'Customer feedback', "FAQ's"].map((tab, idx) => (
+              {['Specifications', 'Descriptions', 'Product Info', 'Customer feedback', "FAQ's"].map((tab) => (
                 <button
                   key={tab}
                   type="button"
@@ -225,7 +275,7 @@ export function ProductDetails() {
             {activeTab === 'Descriptions' ? (
               <div className="mt-6 text-[12px] leading-6 text-muted md:text-[13px]">
                 <p>
-                  {product.description}
+                  <span dangerouslySetInnerHTML={{ __html: product.description }} />
                 </p>
                 <p className="mt-3">
                   Pro - Large exceptional bouquet composed of a selection of David Austin roses,
@@ -260,18 +310,18 @@ export function ProductDetails() {
             ) : null}
           </section>
 
-          <section className="mt-8">
-            <h2 className="text-center text-[28px] font-semibold text-ink md:text-[40px]">You may also like...</h2>
-            <div className="mt-4 grid grid-cols-2 gap-2 md:grid-cols-4 md:gap-3">
-              {related.map((r, i) => (
-                <RelatedCard key={i} image={r.image} sale={r.sale} to={`/product-details/${slug || 'rosy-delight'}`} />
+          <section className="mt-10">
+            <h2 className="text-[18px] font-semibold text-ink">Related products</h2>
+            <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+              {related.map((item, idx) => (
+                <RelatedCard key={idx} image={item.image} sale={item.sale} to={`/products/${product.slug || 'sample-product'}`} />
               ))}
             </div>
           </section>
+
+          <MailingList className="mt-10" />
         </div>
       </section>
-
-      <MailingList />
     </>
   );
 }
