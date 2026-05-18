@@ -102,3 +102,16 @@ export async function validateDiscount(code, subtotal) {
   if (!res.ok) throw new Error(data.error || 'Invalid discount code');
   return data;
 }
+
+export async function fetchBlogs() {
+  const res = await fetch(apiUrl('/api/blogs'));
+  if (!res.ok) throw new Error('Failed to load blogs');
+  return res.json();
+}
+
+export async function fetchBlogBySlug(slug) {
+  const res = await fetch(apiUrl(`/api/blogs/${slug}`));
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || 'Failed to load blog');
+  return data;
+}

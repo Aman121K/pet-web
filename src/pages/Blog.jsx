@@ -1,40 +1,48 @@
 import { FeatureBar } from '../components/FeatureBar.jsx';
 import { Link } from 'react-router-dom';
+import { useEffect, useMemo, useState } from 'react';
+import { fetchBlogs } from '../api.js';
 import blog1 from '../assets/pets/home/blog-1.jpg';
-import blog2 from '../assets/pets/home/blog-2.jpg';
-import blog3 from '../assets/pets/home/blog-3.jpg';
 
-const posts = [
-  {
-    slug: 'pet-nutrition-101',
-    title: 'Pet Nutrition 101: Building Better Meals',
-    excerpt:
-      'Learn how to read labels, pick balanced ingredients, and avoid common nutrition mistakes for dogs and cats.',
-    category: 'Nutrition',
-    date: 'May 08, 2026',
-    image: blog1,
-  },
-  {
-    slug: 'training-basics',
-    title: 'Training Basics That Work Every Day',
-    excerpt:
-      'Simple routines, reward timing, and consistency tips to improve behavior without stress for your pet.',
-    category: 'Training',
-    date: 'May 02, 2026',
-    image: blog2,
-  },
-  {
-    slug: 'cozy-home-for-pets',
-    title: 'Designing a Cozy Home Zone for Pets',
-    excerpt:
-      'From beds to play corners, here are practical ideas to create a safe and calming setup for your companion.',
-    category: 'Lifestyle',
-    date: 'Apr 26, 2026',
-    image: blog3,
-  },
-];
+function formatDate(value) {
+  if (!value) return '';
+  const d = new Date(value);
+  if (Number.isNaN(d.getTime())) return '';
+  return d.toLocaleDateString(undefined, { month: 'short', day: '2-digit', year: 'numeric' });
+}
 
 export function Blog() {
+  const [posts, setPosts] = useState([]);
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      try {
+        const rows = await fetchBlogs();
+        if (mounted) setPosts(Array.isArray(rows) ? rows : []);
+      } catch (err) {
+        if (mounted) setError(err.message || 'Failed to load blogs');
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    })();
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  const items = useMemo(
+    () =>
+      posts.map((post) => ({
+        ...post,
+        image: post.featuredImageUrl || blog1,
+        date: formatDate(post.publishedAt || post.createdAt),
+      })),
+    [posts]
+  );
+
   return (
     <>
       <FeatureBar />
@@ -50,10 +58,17 @@ export function Blog() {
             </p>
           </header>
 
-          <div className="mt-10 grid gap-5 sm:mt-12 md:grid-cols-2 lg:grid-cols-3">
-            {posts.map((post) => (
+          {loading && <p className="mt-10 text-center text-muted">Loading blog posts...</p>}
+          {!loading && error && <p className="mt-10 text-center text-red-600">{error}</p>}
+          {!loading && !error && items.length === 0 && (
+            <p className="mt-10 text-center text-muted">No blog posts available right now.</p>
+          )}
+
+          {!loading && !error && items.length > 0 && (
+            <div className="mt-10 grid gap-5 sm:mt-12 md:grid-cols-2 lg:grid-cols-3">
+            {items.map((post) => (
               <article
-                key={post.title}
+                key={post.slug || post.title}
                 className="overflow-hidden rounded-sm border border-line bg-white shadow-[0_10px_30px_rgba(0,0,0,0.04)]"
               >
                 <div className="aspect-[4/3] bg-surface">
@@ -76,7 +91,8 @@ export function Blog() {
                 </div>
               </article>
             ))}
-          </div>
+            </div>
+          )}
         </div>
       </section>
     </>
