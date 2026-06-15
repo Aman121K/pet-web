@@ -13,12 +13,12 @@ export function Categories() {
         <h2 className="max-w-[320px] text-center text-[32px] font-semibold leading-[36px] text-ink lg:max-w-none lg:text-[40px] lg:leading-[44px]">
           Product categories
         </h2>
-        <div className="w-full overflow-x-auto pb-2 lg:overflow-visible lg:pb-0">
-          <div className="flex w-max min-w-full snap-x snap-mandatory items-start gap-5 px-1 lg:w-full lg:min-w-0 lg:justify-center lg:gap-[148px] lg:px-0">
+        <div className="w-full overflow-x-auto pb-2 sm:overflow-visible lg:pb-0">
+          <div className="mx-auto flex w-max min-w-full snap-x snap-mandatory items-start justify-center gap-5 px-1 sm:w-full sm:min-w-0 sm:flex-wrap sm:gap-8 sm:px-0 md:gap-12 lg:gap-[148px]">
           {cats.map((c) => (
             <div
               key={c.label}
-              className="flex w-[90px] shrink-0 snap-start flex-col items-center gap-[10px] lg:w-[106px] lg:gap-[12px]"
+              className="flex w-[90px] shrink-0 snap-start flex-col items-center gap-[10px] sm:shrink lg:w-[106px] lg:gap-[12px]"
             >
               <div className="flex h-[64px] w-[64px] items-center justify-center lg:h-[96px] lg:w-[96px]">
                 <img src={c.icon} alt={c.label} className="h-[64px] w-[64px] object-contain lg:h-[96px] lg:w-[96px]" />

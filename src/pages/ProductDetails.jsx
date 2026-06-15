@@ -30,7 +30,7 @@ function slugToTitle(slug) {
 
 function RelatedCard({ image, sale, to }) {
   return (
-    <article className="border border-line bg-white p-[8px]">
+    <article className="product-hover-card border border-line bg-white p-[8px]">
       <div className="relative aspect-[1.25] overflow-hidden">
         <Link to={to} className="block h-full w-full">
           <img src={image} alt="" className="h-full w-full object-cover" />
@@ -146,8 +146,8 @@ export function ProductDetails() {
 
       <FeatureBar />
 
-      <section className="border-b border-line bg-[#f4f4f4]">
-        <div className="mx-auto max-w-[1200px] px-4 py-3 text-[11px] text-muted">
+      <section className="border-b border-line bg-surface">
+        <div className="pet-page-shell py-3 text-[11px] text-muted">
           <Link to="/" className="hover:text-ink">Home</Link>
           <span className="px-2">&gt;</span>
           <Link to="/shop" className="hover:text-ink">Categories</Link>
@@ -156,11 +156,11 @@ export function ProductDetails() {
         </div>
       </section>
 
-      <section className="bg-[#efefef] py-5 md:py-8">
-        <div className="mx-auto max-w-[1200px] px-4">
-          <div className="grid gap-4 lg:grid-cols-[1.1fr_1fr]">
+      <section className="bg-surface py-6 md:py-8">
+        <div className="pet-page-shell">
+          <div className="grid gap-5 lg:grid-cols-[1.1fr_1fr]">
             <div>
-              <div className="overflow-hidden border border-line bg-white">
+              <div className="overflow-hidden rounded-xl border border-line bg-white">
                 <img src={mainImage} alt={product.imageAltText} className="h-[260px] w-full object-cover md:h-[420px]" />
               </div>
               <div className="mt-3 flex items-center gap-2 overflow-x-auto">
@@ -169,7 +169,7 @@ export function ProductDetails() {
                     key={`${img}-${i}`}
                     type="button"
                     onClick={() => setMainImage(img)}
-                    className="h-[56px] w-[56px] shrink-0 overflow-hidden border border-line bg-white"
+                    className="h-[56px] w-[56px] shrink-0 overflow-hidden rounded-xl border border-line bg-white"
                   >
                     <img src={img} alt={`${product.name} thumbnail ${i + 1}`} className="h-full w-full object-cover" />
                   </button>
@@ -177,9 +177,9 @@ export function ProductDetails() {
               </div>
             </div>
 
-            <aside className="border border-line bg-white p-4 md:p-6">
+            <aside className="rounded-xl border border-line bg-white p-5 md:p-7">
               <p className="text-[12px] text-muted">{product.category}</p>
-              <h1 className="mt-2 text-[32px] font-semibold leading-[1.05] text-ink md:text-[44px]">
+              <h1 className="mt-2 text-[32px] font-semibold leading-[1.05] tracking-tight text-ink md:text-[44px]">
                 H1 - {product.name} - ${product.price.toFixed(0)}
               </h1>
               <div className="mt-4 text-[12px] leading-5 text-muted" dangerouslySetInnerHTML={{ __html: product.description }} />
@@ -196,7 +196,7 @@ export function ProductDetails() {
                 <button type="button" onClick={() => setQty((q) => q + 1)} className="h-8 w-8 border border-line bg-white text-[18px]">+</button>
               </div>
 
-              <div className="mt-4 space-y-3 border-t border-line pt-3 text-[11px] text-muted">
+              <div className="mt-5 space-y-3 border-t border-line pt-4 text-[12px] text-muted">
                 <div className="flex items-start justify-between gap-3">
                   <div>
                     <p className="font-semibold text-ink">Special Delivery</p>
@@ -223,23 +223,23 @@ export function ProductDetails() {
                     qty,
                   })
                 }
-                className="mt-4 inline-flex h-10 w-full items-center justify-center bg-ink text-[12px] font-semibold text-white"
+                className="pet-btn-primary mt-5 inline-flex h-11 w-full items-center justify-center text-[13px]"
               >
                 ADD TO CART
               </button>
             </aside>
           </div>
 
-          <section className="mt-8 border border-line bg-white p-4 md:p-7">
+          <section className="pet-card mt-8 p-5 md:p-7">
             <h2 className="text-center text-[22px] font-semibold text-ink">Product details</h2>
-            <div className="mt-4 grid grid-cols-2 gap-2 text-[11px] md:grid-cols-5">
+            <div className="mt-4 grid grid-cols-2 gap-2 text-[12px] md:grid-cols-5">
               {['Specifications', 'Descriptions', 'Product Info', 'Customer feedback', "FAQ's"].map((tab) => (
                 <button
                   key={tab}
                   type="button"
                   onClick={() => setActiveTab(tab)}
                   className={`h-8 border border-line px-3 ${
-                    activeTab === tab ? 'bg-[#dcdcdc] text-ink' : 'bg-[#f3f3f3] text-muted'
+                    activeTab === tab ? 'bg-ink text-white' : 'bg-surface text-muted'
                   }`}
                 >
                   {tab}
@@ -311,7 +311,7 @@ export function ProductDetails() {
           </section>
 
           <section className="mt-10">
-            <h2 className="text-[18px] font-semibold text-ink">Related products</h2>
+            <h2 className="text-[24px] font-semibold tracking-tight text-ink">Related products</h2>
             <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
               {related.map((item, idx) => (
                 <RelatedCard key={idx} image={item.image} sale={item.sale} to={`/products/${product.slug || 'sample-product'}`} />

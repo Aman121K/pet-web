@@ -20,7 +20,7 @@ export function ProductCard({ image, title, brand, compareAt, price, quantity = 
   const to = `/product-details/${fallbackSlug || 'product'}`;
 
   return (
-    <article className="flex h-[525px] w-[min(324px,calc(100vw-32px))] flex-none flex-col bg-white p-[13px] shadow-[inset_0_0_0_1px_#1C1C1C] sm:h-[476px] sm:w-[294px]">
+    <article className="home-product-card product-hover-card flex h-[525px] w-[min(324px,calc(100vw-32px))] flex-none flex-col border border-transparent bg-white p-[13px] shadow-[inset_0_0_0_1px_#1C1C1C] sm:h-[476px] sm:w-[294px]">
       <div className="relative h-[224px] w-full overflow-hidden bg-white sm:h-[203px]">
         <Link to={to} className="block h-full w-full">
           <img src={image} alt={title} className="h-full w-full object-cover" />
@@ -48,7 +48,7 @@ export function ProductCard({ image, title, brand, compareAt, price, quantity = 
           </div>
         </div>
 
-        <div className="mt-auto flex h-[46px] items-center gap-3">
+        <div className="home-product-actions mt-auto flex h-[46px] items-center gap-3">
           <div className="flex h-[46px] w-[106px] items-center justify-center border border-line bg-white px-[7px]">
             <button
               type="button"

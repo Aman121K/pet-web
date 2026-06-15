@@ -1,13 +1,13 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { FeatureBar } from '../components/FeatureBar.jsx';
-import { FaqBlock } from '../components/home/FaqBlock.jsx';
 import { MailingList } from '../components/home/MailingList.jsx';
 import { addToCartAndOpen } from '../components/CartDrawer.jsx';
+import { getShopCategory, shopCategories } from '../data/shopCategories.js';
 import heroDogs from '../assets/pets/hero.jpg';
 import infoImage from '../assets/pets/modal-left.jpg';
 import product1 from '../assets/pets/product-1.jpg';
-import product2 from '../assets/pets/product-2.jpg';
 import product3 from '../assets/pets/product-3.jpg';
 import pick1 from '../assets/pets/home/pick-1.jpg';
 import pick2 from '../assets/pets/home/pick-2.jpg';
@@ -43,40 +43,199 @@ function ProductCell({ item, qty, onIncrease, onDecrease }) {
     .replace(/^-+|-+$/g, '');
   const to = `/product-details/${slug}`;
   return (
-    <article className="border border-line bg-white p-[6px]">
-      <div className="relative aspect-[1.38] overflow-hidden bg-surface">
+    <article className="product-hover-card pet-card overflow-hidden">
+      <div className="relative aspect-[1.15] overflow-hidden bg-surface">
         <Link to={to} className="block h-full w-full">
-          <img src={image} alt="" className="h-full w-full object-cover" />
+          <img src={image} alt="" className="h-full w-full object-cover transition duration-300 hover:scale-[1.03]" />
         </Link>
-        <span className="absolute right-0 top-0 bg-[#dc3e3e] px-[6px] py-[2px] text-[9px] font-semibold text-white">
-          Sale {sale}%
+        <span className="absolute right-2 top-2 rounded-md bg-rose-600 px-2 py-1 text-[10px] font-semibold text-white">
+          -{sale}%
         </span>
       </div>
-      <div className="pt-2">
+      <div className="p-3">
         <Link to={to}>
-          <h3 className="line-clamp-2 text-[10px] leading-[1.35] text-ink">
+          <h3 className="line-clamp-2 text-[13px] font-medium leading-[1.35] text-ink hover:underline">
             {title}
           </h3>
         </Link>
-        <p className="mt-1 text-[10px] text-muted">{brand}</p>
-        <div className="mt-1 flex items-center gap-1 text-[10px]">
+        <p className="mt-1 text-[12px] text-muted">{brand}</p>
+        <div className="mt-2 flex items-center gap-2 text-[13px]">
           <span className="text-muted line-through">${compareAt.toFixed(2)}</span>
           <span className="font-semibold text-ink">${price.toFixed(2)}</span>
         </div>
-        <div className="mt-2 flex items-center gap-1">
-          <button type="button" onClick={onDecrease} className="h-5 w-5 border border-line text-[12px] leading-none text-muted">-</button>
-          <span className="inline-flex h-5 min-w-[16px] items-center justify-center text-[10px] text-ink">{qty}</span>
-          <button type="button" onClick={onIncrease} className="h-5 w-5 border border-line text-[12px] leading-none text-ink">+</button>
+        <div className="product-cell-actions mt-3 flex items-center gap-2">
+          <div className="inline-flex h-8 items-center rounded-lg border border-line bg-white">
+            <button type="button" onClick={onDecrease} className="h-full w-8 text-[14px] text-muted">-</button>
+            <span className="inline-flex h-full min-w-[24px] items-center justify-center text-[12px] text-ink">{qty}</span>
+            <button type="button" onClick={onIncrease} className="h-full w-8 text-[14px] text-ink">+</button>
+          </div>
           <button
             type="button"
             onClick={() => addToCartAndOpen({ id: item.id, title, image, price, qty })}
-            className="ml-auto inline-flex h-5 items-center bg-ink px-2 text-[9px] font-semibold text-white"
+            className="pet-btn-primary ml-auto h-8 px-3 text-[11px]"
           >
-            ADD TO CART
+            Add
           </button>
         </div>
       </div>
     </article>
+  );
+}
+
+const categoryFaqs = [
+  {
+    question: 'How do I choose the right category?',
+    answer:
+      'Start with your pet type, then use the subcategories for food, health, treats, or accessories. You can still sort and filter products after choosing a category.',
+  },
+  {
+    question: 'Can I mix products from different categories?',
+    answer:
+      'Yes. Add items from any category to your cart and checkout together in one order.',
+  },
+  {
+    question: 'Are health and diet products suitable for every pet?',
+    answer:
+      'Some products depend on age, breed, or medical needs. Check the product details and speak with your vet for special diets or treatments.',
+  },
+  {
+    question: 'Where do I find new arrivals and bundles?',
+    answer:
+      'Use Shop All for the widest list, then sort by Latest or choose bundle-related subcategories from the category panel.',
+  },
+];
+
+function CategoryExplorer({ activeCategory, activeSubcategory, onCategoryChange, onSubcategoryChange }) {
+  const selected = getShopCategory(activeCategory);
+
+  return (
+    <section className="mt-5 border border-line bg-white">
+      <div className="grid lg:grid-cols-[292px_1fr]">
+        <aside className="border-b border-line bg-[#fbfbfb] p-4 lg:border-b-0 lg:border-r lg:p-5">
+          <div className="flex items-end justify-between gap-3">
+            <div>
+              <p className="text-[12px] font-semibold uppercase tracking-[0.16em] text-[#29748a]">Shop by pet</p>
+              <h2 className="mt-1 text-[22px] font-semibold leading-tight text-ink">Categories</h2>
+            </div>
+            <button
+              type="button"
+              onClick={() => {
+                onCategoryChange('all');
+                onSubcategoryChange('');
+              }}
+              className="text-[12px] font-semibold text-[#b42323] hover:underline"
+            >
+              Reset
+            </button>
+          </div>
+
+          <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
+            {shopCategories.map((category) => (
+              <button
+                key={category.key}
+                type="button"
+                onClick={() => {
+                  onCategoryChange(category.key);
+                  onSubcategoryChange('');
+                }}
+                className={`category-card group flex min-h-[86px] overflow-hidden border text-left transition ${
+                  selected.key === category.key
+                    ? 'border-[#f0a9a9] bg-[#fff1f1] shadow-[0_10px_24px_rgba(180,35,35,0.08)]'
+                    : 'border-line bg-white hover:border-[#f0a9a9] hover:bg-[#fff7f7]'
+                }`}
+              >
+                <div className="flex min-w-0 flex-1 flex-col justify-center px-4">
+                  <span className="text-[15px] font-semibold leading-5 text-ink">{category.label}</span>
+                  <span className="mt-2 text-[12px] font-semibold uppercase tracking-[0.08em] text-[#9d1f1f]">
+                    {category.eyebrow}
+                    <span className="ml-2 transition group-hover:translate-x-1">›</span>
+                  </span>
+                </div>
+                <img src={category.image} alt="" className="category-card-image h-[86px] w-[92px] object-cover" />
+              </button>
+            ))}
+          </div>
+        </aside>
+
+        <div className="p-4 sm:p-5 lg:p-6">
+          <div className="flex flex-col gap-3 border-b border-line pb-5 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <p className="text-[12px] font-semibold uppercase tracking-[0.16em] text-[#29748a]">
+                {selected.eyebrow}
+              </p>
+              <h2 className="mt-1 text-[26px] font-semibold leading-tight text-ink md:text-[32px]">
+                {selected.label} categories
+              </h2>
+              <p className="mt-2 max-w-[620px] text-[14px] leading-6 text-muted">{selected.description}</p>
+            </div>
+            {activeSubcategory ? (
+              <button
+                type="button"
+                onClick={() => onSubcategoryChange('')}
+                className="self-start border border-line px-3 py-2 text-[12px] font-semibold text-ink hover:bg-surface sm:self-auto"
+              >
+                Clear {activeSubcategory}
+              </button>
+            ) : null}
+          </div>
+
+          <div className="mt-5 grid gap-x-8 gap-y-6 md:grid-cols-2 xl:grid-cols-3">
+            {selected.groups.map((group) => (
+              <section key={group.title}>
+                <h3 className="border-b border-line pb-3 text-[15px] font-semibold text-[#29748a]">
+                  {group.title}
+                </h3>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {group.items.map((item) => (
+                    <button
+                      key={item}
+                      type="button"
+                      onClick={() => onSubcategoryChange(item)}
+                      className={`border px-3 py-2 text-left text-[13px] leading-5 transition ${
+                        activeSubcategory === item
+                          ? 'border-[#b42323] bg-[#b42323] text-white'
+                          : 'border-line bg-white text-ink/80 hover:border-[#f0a9a9] hover:bg-[#fff7f7] hover:text-[#b42323]'
+                      }`}
+                    >
+                      {item}
+                    </button>
+                  ))}
+                </div>
+              </section>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function CategoryFaq() {
+  return (
+    <section className="mt-10 border border-line bg-white p-4 sm:p-6 lg:p-8">
+      <div className="grid gap-6 lg:grid-cols-[320px_1fr]">
+        <div>
+          <p className="text-[12px] font-semibold uppercase tracking-[0.16em] text-[#29748a]">Category FAQ</p>
+          <h2 className="mt-2 text-[26px] font-semibold leading-tight text-ink md:text-[32px]">
+            Help choosing the right product
+          </h2>
+          <p className="mt-3 text-[14px] leading-6 text-muted">
+            Quick answers for browsing categories, subcategories, bundles, and pet-specific products.
+          </p>
+        </div>
+        <div className="divide-y divide-line border border-line">
+          {categoryFaqs.map((item) => (
+            <details key={item.question} className="group bg-white p-4 open:bg-[#fffafa]">
+              <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-[15px] font-semibold text-ink">
+                {item.question}
+                <span className="text-[22px] leading-none text-[#b42323] group-open:rotate-45">+</span>
+              </summary>
+              <p className="mt-3 text-[14px] leading-6 text-muted">{item.answer}</p>
+            </details>
+          ))}
+        </div>
+      </div>
+    </section>
   );
 }
 
@@ -85,7 +244,7 @@ function FilterSelect({ value, onChange, options }) {
     <select
       value={value}
       onChange={(e) => onChange(e.target.value)}
-      className="h-8 min-w-[120px] border border-line bg-white px-2 text-[10px] text-[#6d6d6d] outline-none"
+      className="h-10 w-full border border-line bg-white px-3 text-[13px] text-ink outline-none sm:w-auto sm:min-w-[160px]"
     >
       {options.map((o) => (
         <option key={o.value} value={o.value}>
@@ -97,17 +256,36 @@ function FilterSelect({ value, onChange, options }) {
 }
 
 export function Shop() {
+  const location = useLocation();
+  const params = new URLSearchParams(location.search);
+  const initialCategory = params.get('category') || 'all';
+  const initialSubcategory = params.get('subcategory') || '';
   const [qtyById, setQtyById] = useState(() =>
     Object.fromEntries(baseCards.map((c) => [c.id, 1]))
   );
-  const [category, setCategory] = useState('all');
+  const [category, setCategory] = useState(() => getShopCategory(initialCategory).key);
+  const [subcategory, setSubcategory] = useState(initialSubcategory);
   const [priceRange, setPriceRange] = useState('all');
   const [rating, setRating] = useState('all');
   const [sortBy, setSortBy] = useState('latest');
+  const selectedCategory = getShopCategory(category);
+
+  useEffect(() => {
+    let cancelled = false;
+    const nextParams = new URLSearchParams(location.search);
+    queueMicrotask(() => {
+      if (cancelled) return;
+      setCategory(getShopCategory(nextParams.get('category') || 'all').key);
+      setSubcategory(nextParams.get('subcategory') || '');
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [location.search]);
 
   const cards = useMemo(() => {
     let rows = [...baseCards];
-    if (category !== 'all') rows = rows.filter((r) => r.category === category);
+    if (selectedCategory.productFilter !== 'all') rows = rows.filter((r) => r.category === selectedCategory.productFilter);
     if (priceRange === 'low') rows = rows.filter((r) => r.price < 210);
     if (priceRange === 'mid') rows = rows.filter((r) => r.price >= 210 && r.price <= 216);
     if (priceRange === 'high') rows = rows.filter((r) => r.price > 216);
@@ -118,7 +296,7 @@ export function Shop() {
     if (sortBy === 'priceHigh') rows.sort((a, b) => b.price - a.price);
     if (sortBy === 'ratingHigh') rows.sort((a, b) => b.rating - a.rating);
     return rows;
-  }, [category, priceRange, rating, sortBy]);
+  }, [selectedCategory.productFilter, priceRange, rating, sortBy]);
 
   const total = cards.length;
 
@@ -126,137 +304,85 @@ export function Shop() {
     <>
       <FeatureBar />
 
-      <section className="border-b border-line bg-[#f6f6f6]">
-        <div className="mx-auto max-w-[1200px] px-4 py-2 text-[10px] text-muted">
-          Home <span className="px-1">&gt;</span> Shop
-        </div>
+      <section className="border-b border-line bg-surface py-2">
+        <div className="pet-page-shell text-[12px] text-muted">Home <span className="px-1">/</span> Shop</div>
       </section>
 
-      <section className="bg-[#f1f1f1] py-3">
-        <div className="mx-auto max-w-[1200px] px-4">
-          <div className="overflow-hidden rounded-[6px] bg-[#1e1e1e] md:grid md:grid-cols-[1fr_1.1fr] md:items-center">
-            <div className="order-2 px-5 py-5 text-white md:order-1 md:px-7">
-              <h1 className="max-w-[320px] text-[24px] font-semibold leading-[1.1] md:text-[32px]">
-                Find everything you need to welcome them home
+      <section className="bg-surface py-6 md:py-8">
+        <div className="pet-page-shell">
+          <div className="overflow-hidden border border-line bg-white md:grid md:grid-cols-[1fr_1.1fr] md:items-center">
+            <div className="order-2 p-6 md:order-1 md:p-8">
+              <p className="text-[12px] font-semibold uppercase tracking-[0.16em] text-[#29748a]">Pet Square Shop</p>
+              <h1 className="mt-2 max-w-[520px] text-[32px] font-semibold leading-[1.08] tracking-tight text-ink md:text-[44px]">
+                Find the right food, care, and gear by category
               </h1>
-              <button type="button" className="mt-4 h-8 border border-white/60 px-4 text-[11px] font-semibold">
-                EXPLORE NOW
-              </button>
+              <p className="mt-4 max-w-[520px] text-[14px] leading-6 text-muted md:text-[16px]">
+                Choose a category on the left, then narrow by subcategory on the right.
+              </p>
+              <a href="#shop-categories" className="pet-btn-primary mt-6">Explore categories</a>
             </div>
             <div className="order-1 md:order-2">
-              <img src={heroDogs} alt="Pets" className="h-[170px] w-full object-cover md:h-[220px]" />
+              <img src={heroDogs} alt="Pets" className="h-[220px] w-full object-cover md:h-[300px]" />
             </div>
           </div>
 
-          <div className="mt-3 flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between">
-            <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:items-center">
-              <FilterSelect
-                value={category}
-                onChange={setCategory}
-                options={[
-                  { value: 'all', label: 'Select Category' },
-                  { value: 'dog', label: 'Dog' },
-                  { value: 'cat', label: 'Cat' },
-                  { value: 'fish', label: 'Fish' },
-                  { value: 'bird', label: 'Bird' },
-                ]}
-              />
-              <FilterSelect
-                value={priceRange}
-                onChange={setPriceRange}
-                options={[
-                  { value: 'all', label: 'Select Price' },
-                  { value: 'low', label: 'Under $210' },
-                  { value: 'mid', label: '$210 - $216' },
-                  { value: 'high', label: 'Above $216' },
-                ]}
-              />
-              <FilterSelect
-                value={rating}
-                onChange={setRating}
-                options={[
-                  { value: 'all', label: 'Select Rating' },
-                  { value: '4', label: '4.0+' },
-                  { value: '4.5', label: '4.5+' },
-                ]}
-              />
-              <FilterSelect
-                value={sortBy}
-                onChange={setSortBy}
-                options={[
-                  { value: 'latest', label: 'Sort by: Latest' },
-                  { value: 'priceLow', label: 'Price: Low to High' },
-                  { value: 'priceHigh', label: 'Price: High to Low' },
-                  { value: 'ratingHigh', label: 'Rating: High to Low' },
-                ]}
-              />
-            </div>
-            <div className="flex items-center justify-between gap-4 text-[10px] text-muted md:justify-end">
-              <span>Showing 1-{total}</span>
-              <span>{total} result found</span>
+          <div id="shop-categories">
+            <CategoryExplorer
+              activeCategory={category}
+              activeSubcategory={subcategory}
+              onCategoryChange={setCategory}
+              onSubcategoryChange={setSubcategory}
+            />
+          </div>
+
+          <div className="pet-card mt-5 p-4">
+            <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+              <div className="grid grid-cols-1 gap-2 sm:flex sm:flex-wrap">
+                <FilterSelect value={priceRange} onChange={setPriceRange} options={[{ value: 'all', label: 'Price' }, { value: 'low', label: 'Under $210' }, { value: 'mid', label: '$210 - $216' }, { value: 'high', label: 'Above $216' }]} />
+                <FilterSelect value={rating} onChange={setRating} options={[{ value: 'all', label: 'Rating' }, { value: '4', label: '4.0+' }, { value: '4.5', label: '4.5+' }]} />
+                <FilterSelect value={sortBy} onChange={setSortBy} options={[{ value: 'latest', label: 'Latest' }, { value: 'priceLow', label: 'Price low to high' }, { value: 'priceHigh', label: 'Price high to low' }, { value: 'ratingHigh', label: 'Rating high to low' }]} />
+              </div>
+              <div className="text-[12px] text-muted">
+                Showing {total} products in {selectedCategory.label}
+                {subcategory ? ` / ${subcategory}` : ''}
+              </div>
             </div>
           </div>
 
-          <div className="mt-4 border border-line bg-white p-5 text-center">
-            <h2 className="text-[22px] font-semibold text-ink md:text-[32px]">To upscale your business to the next level</h2>
-            <p className="mx-auto mt-2 max-w-[760px] text-[12px] leading-6 text-muted md:text-[13px]">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed diam nonumy eirmod invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.
-            </p>
-          </div>
-
-          <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-            {cards.map((card, idx) => (
+          <div className="shop-product-grid mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+            {cards.map((card) => (
               <ProductCell
                 key={card.id}
                 item={card}
                 qty={qtyById[card.id] || 1}
                 onDecrease={() =>
-                  setQtyById((prev) => ({
-                    ...prev,
-                    [card.id]: Math.max(1, (prev[card.id] || 1) - 1),
-                  }))
+                  setQtyById((prev) => ({ ...prev, [card.id]: Math.max(1, (prev[card.id] || 1) - 1) }))
                 }
                 onIncrease={() =>
-                  setQtyById((prev) => ({
-                    ...prev,
-                    [card.id]: (prev[card.id] || 1) + 1,
-                  }))
+                  setQtyById((prev) => ({ ...prev, [card.id]: (prev[card.id] || 1) + 1 }))
                 }
               />
             ))}
           </div>
 
-          <div className="mt-5 flex justify-center">
-            <button type="button" className="text-[10px] font-semibold text-ink underline underline-offset-2">
-              VIEW MORE
-            </button>
+          <div className="mt-6 flex justify-center">
+            <button type="button" className="pet-btn-secondary">View more</button>
           </div>
 
-          <div className="mt-7 grid gap-4 border-t border-line pt-6 md:grid-cols-2 md:items-center">
-            <img src={infoImage} alt="Dog house" className="h-[170px] w-full object-cover md:h-[240px]" />
+          <div className="mt-10 grid gap-6 md:grid-cols-2 md:items-center">
+            <img src={infoImage} alt="Dog house" className="border border-line object-cover" />
             <div>
-              <h3 className="text-[24px] font-semibold leading-[1.15] text-ink md:text-[38px]">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</h3>
-              <p className="mt-3 text-[12px] leading-6 text-muted md:text-[13px]">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris dignissim dolor ut
-                ullamcorper eleifend. Maecenas quis elit sodales auctor eget et elit.
+              <h3 className="text-[28px] font-semibold leading-[1.15] tracking-tight text-ink md:text-[38px]">Curated products for daily pet care.</h3>
+              <p className="mt-3 text-[14px] leading-7 text-muted">
+                Shop by pet type, routine, and need so you can compare essentials without guessing where they belong.
               </p>
             </div>
           </div>
 
-          <div className="mt-6 grid gap-4 md:grid-cols-2 md:items-center">
-            <div>
-              <h3 className="text-[24px] font-semibold leading-[1.15] text-ink md:text-[38px]">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</h3>
-              <p className="mt-3 text-[12px] leading-6 text-muted md:text-[13px]">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris dignissim dolor ut
-                ullamcorper eleifend. Maecenas quis elit sodales auctor eget et elit.
-              </p>
-            </div>
-            <img src={infoImage} alt="Dog house" className="h-[170px] w-full object-cover md:h-[240px]" />
-          </div>
+          <CategoryFaq />
         </div>
       </section>
 
-      <FaqBlock />
       <MailingList />
     </>
   );

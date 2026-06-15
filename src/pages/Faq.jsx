@@ -1,25 +1,36 @@
 import { FeatureBar } from '../components/FeatureBar.jsx';
-
-const items = [
-  {
-    q: 'How fast is delivery?',
-    a: 'Many orders qualify for next-day delivery in supported regions. Delivery estimate appears at checkout based on your PIN code.',
-  },
-  {
-    q: 'Can I return an item?',
-    a: 'Yes. Eligible products can be returned in the policy window. You can initiate returns from your account or by contacting support.',
-  },
-  {
-    q: 'How do I track my order?',
-    a: 'As soon as your order ships, we send tracking details by email. You can also view live status in your account dashboard.',
-  },
-  {
-    q: 'Do you verify product quality?',
-    a: 'All listed products go through supplier verification and quality checks. We prioritize transparent ingredients and trusted brands.',
-  },
-];
+import { useEffect, useState } from 'react';
+import { fetchFaqs } from '../api.js';
 
 export function Faq() {
+  const [items, setItems] = useState([]);
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      try {
+        const rows = await fetchFaqs();
+        if (mounted) {
+          setItems(
+            (Array.isArray(rows) ? rows : []).map((row) => ({
+              q: row.question || '',
+              a: row.answer || '',
+            }))
+          );
+        }
+      } catch (err) {
+        if (mounted) setError(err.message || 'Failed to load FAQs');
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    })();
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
   return (
     <>
       <FeatureBar />
@@ -34,7 +45,14 @@ export function Faq() {
             </p>
           </header>
 
-          <dl className="mt-10 space-y-4 sm:mt-12">
+          {loading && <p className="mt-10 text-center text-muted">Loading FAQs...</p>}
+          {!loading && error && <p className="mt-10 text-center text-red-600">{error}</p>}
+          {!loading && !error && items.length === 0 && (
+            <p className="mt-10 text-center text-muted">No FAQs available right now.</p>
+          )}
+
+          {!loading && !error && items.length > 0 && (
+            <dl className="mt-10 space-y-4 sm:mt-12">
             {items.map((row) => (
               <div
                 key={row.q}
@@ -44,7 +62,8 @@ export function Faq() {
                 <dd className="mt-3 text-[14px] leading-7 text-muted sm:text-[15px]">{row.a}</dd>
               </div>
             ))}
-          </dl>
+            </dl>
+          )}
         </div>
       </section>
     </>

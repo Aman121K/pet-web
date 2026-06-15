@@ -59,7 +59,7 @@ export function Signup() {
     <>
       <FeatureBar />
       <section className="bg-gradient-to-b from-surface to-white px-4 py-10 sm:px-6 lg:px-8 lg:py-14">
-        <div className="mx-auto w-full max-w-[720px] rounded-2xl border border-line bg-white p-6 shadow-[0_20px_70px_rgba(17,17,17,0.08)] sm:p-8 lg:p-10">
+        <div className="mx-auto w-full max-w-[720px] rounded-none border border-line bg-white p-6 shadow-[0_20px_70px_rgba(17,17,17,0.08)] sm:p-8 lg:p-10">
           <h1 className="text-[30px] font-semibold tracking-tight text-ink">Sign up</h1>
           <p className="mt-1 text-[14px] text-muted">
             Create your Pet SQUARE account for faster checkout and order tracking.

@@ -9,11 +9,7 @@ import logoIcon3x from '../assets/Frame 29@3x.png';
 import logoWordmark from '../assets/Pet Square.png';
 import logoWordmark2x from '../assets/Pet Square@2x.png';
 import logoWordmark3x from '../assets/Pet Square@3x.png';
-import tileDog from '../assets/pets/home/tile-dog.jpg';
-import tileCat from '../assets/pets/home/tile-cat.jpg';
-import tileFish from '../assets/pets/home/tile-fish.jpg';
-import blog1 from '../assets/pets/home/blog-1.jpg';
-import pick1 from '../assets/pets/home/pick-1.jpg';
+import { shopCategories } from '../data/shopCategories.js';
 
 function IconSearch(props) {
   return (
@@ -56,32 +52,6 @@ function IconCart(props) {
   );
 }
 
-function IconUser(props) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" aria-hidden {...props}>
-      <path
-        d="M12 11a4 4 0 1 0-4-4 4 4 0 0 0 4 4Z"
-        stroke="currentColor"
-        strokeWidth="1.6"
-      />
-      <path
-        d="M4 21a8 8 0 0 1 16 0"
-        stroke="currentColor"
-        strokeWidth="1.6"
-        strokeLinecap="round"
-      />
-    </svg>
-  );
-}
-
-function IconMenu(props) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" aria-hidden {...props}>
-      <path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-    </svg>
-  );
-}
-
 function IconClose(props) {
   return (
     <svg viewBox="0 0 24 24" fill="none" aria-hidden {...props}>
@@ -115,14 +85,25 @@ const navItems = [
 
 const navLinkClass = ({ isActive }) =>
   [
-    'relative flex h-[53px] items-center text-[12px] font-normal leading-[14px] tracking-normal transition-colors',
+    'relative flex h-[64px] items-center text-[16px] font-semibold leading-[20px] tracking-normal transition-colors',
     isActive ? 'text-ink' : 'text-ink/70 hover:text-ink',
   ].join(' ');
 
 const navUnderline = (isActive) =>
   isActive ? (
-    <span className="absolute bottom-[13px] left-0 right-0 h-[1px] bg-ink" />
+    <span className="absolute bottom-[17px] left-0 right-0 h-[2px] bg-ink" />
   ) : null;
+
+function getStoredCartCount() {
+  try {
+    const raw = window.localStorage.getItem('pet-cart-items');
+    if (!raw) return 0;
+    const items = JSON.parse(raw);
+    return items.reduce((sum, item) => sum + Number(item.qty || 0), 0);
+  } catch {
+    return 0;
+  }
+}
 
 function HeaderSearch({ className = '' }) {
   return (
@@ -145,10 +126,13 @@ function HeaderSearch({ className = '' }) {
 
 export function Header() {
   const [shopOpen, setShopOpen] = useState(false);
+  const [activeShopCategory, setActiveShopCategory] = useState('cat');
   const [mobileOpen, setMobileOpen] = useState(false);
   const [mobileShopOpen, setMobileShopOpen] = useState(false);
-  const [cartCount, setCartCount] = useState(0);
+  const [cartCount, setCartCount] = useState(getStoredCartCount);
   const shopRef = useRef(null);
+  const activeMegaCategory =
+    shopCategories.find((category) => category.key === activeShopCategory) || shopCategories[1];
 
   useEffect(() => {
     function onDoc(e) {
@@ -172,14 +156,6 @@ export function Header() {
       setCartCount(Number(e?.detail?.count || 0));
     }
     window.addEventListener(COUNT_EVENT, onCount);
-    try {
-      const raw = window.localStorage.getItem('pet-cart-items');
-      if (raw) {
-        const items = JSON.parse(raw);
-        const count = items.reduce((sum, item) => sum + Number(item.qty || 0), 0);
-        setCartCount(count);
-      }
-    } catch {}
     return () => window.removeEventListener(COUNT_EVENT, onCount);
   }, []);
 
@@ -259,7 +235,7 @@ export function Header() {
       </div>
 
       <div className="hidden border-b border-line lg:block">
-        <nav className="mx-auto flex h-[53px] max-w-[1344px] items-center justify-center gap-x-[45px] px-4 sm:px-6 xl:px-0">
+        <nav className="mx-auto flex h-[64px] max-w-[1344px] items-center justify-center gap-x-[52px] px-4 sm:px-6 xl:px-0">
           <NavLink to="/" end className={navLinkClass}>
             {(p) => (
               <>
@@ -273,7 +249,7 @@ export function Header() {
             <button
               type="button"
               onClick={() => setShopOpen((v) => !v)}
-              className="relative flex h-[53px] items-center gap-1 text-[12px] font-normal leading-[14px] tracking-normal text-ink/70 transition hover:text-ink"
+              className="relative flex h-[64px] items-center gap-1.5 text-[16px] font-semibold leading-[20px] tracking-normal text-ink/70 transition hover:text-ink"
               aria-expanded={shopOpen}
             >
               Shop
@@ -282,21 +258,61 @@ export function Header() {
               />
             </button>
             {shopOpen && (
-              <div className="absolute left-0 top-full z-50 mt-1 min-w-[190px] rounded-[2px] border border-line bg-white py-2 shadow-modal">
-                <Link
-                  to="/shop"
-                  className="block px-4 py-2 text-[14px] text-ink hover:bg-surface"
-                  onClick={() => setShopOpen(false)}
-                >
-                  All products
-                </Link>
-                <Link
-                  to="/shop"
-                  className="block px-4 py-2 text-[14px] text-ink hover:bg-surface"
-                  onClick={() => setShopOpen(false)}
-                >
-                  New arrivals
-                </Link>
+              <div className="shop-mega-menu fixed left-1/2 top-[137px] z-50 max-h-[calc(100vh-160px)] w-[min(1180px,calc(100vw-32px))] -translate-x-1/2 overflow-y-auto border border-line bg-white shadow-[0_24px_70px_rgba(15,23,42,0.16)]">
+                <div className="grid gap-0 lg:grid-cols-[280px_1fr]">
+                  <aside className="border-b border-line bg-[#fbfbfb] p-5 lg:border-b-0 lg:border-r">
+                    <p className="text-[12px] font-semibold uppercase tracking-[0.14em] text-[#29748a]">Shop All</p>
+                    <div className="mt-4 space-y-3">
+                      {shopCategories.slice(1, 6).map((category) => (
+                        <Link
+                          key={category.key}
+                          to={`/shop?category=${category.key}`}
+                          onMouseEnter={() => setActiveShopCategory(category.key)}
+                          onFocus={() => setActiveShopCategory(category.key)}
+                          onClick={() => setShopOpen(false)}
+                          className={`group flex min-h-[86px] overflow-hidden border text-left transition ${
+                            activeMegaCategory.key === category.key
+                              ? 'border-[#f3b5b5] bg-[#fff1f1]'
+                              : 'border-line bg-white hover:border-[#f3b5b5] hover:bg-[#fff7f7]'
+                          }`}
+                        >
+                          <div className="flex min-w-0 flex-1 flex-col justify-center px-4">
+                            <span className="text-[16px] font-semibold leading-5 text-[#9d1f1f]">
+                              {category.label}
+                            </span>
+                            <span className="mt-2 text-[13px] font-semibold uppercase tracking-[0.06em] text-ink">
+                              {category.eyebrow}
+                              <span className="ml-2 text-[#9d1f1f] transition group-hover:translate-x-1">›</span>
+                            </span>
+                          </div>
+                          <img src={category.image} alt="" className="h-[86px] w-[96px] object-cover" />
+                        </Link>
+                      ))}
+                    </div>
+                  </aside>
+
+                  <div className="grid gap-x-10 gap-y-8 p-6 lg:grid-cols-3">
+                    {activeMegaCategory.groups.map((group) => (
+                      <section key={group.title}>
+                        <h3 className="border-b border-line pb-3 text-[15px] font-semibold text-[#29748a]">
+                          {group.title}
+                        </h3>
+                        <div className="mt-4 space-y-3">
+                          {group.items.map((item) => (
+                            <Link
+                              key={item}
+                              to={`/shop?category=${activeMegaCategory.key}&subcategory=${encodeURIComponent(item)}`}
+                              onClick={() => setShopOpen(false)}
+                              className="block text-[14px] leading-5 text-ink/80 transition hover:text-[#b42323]"
+                            >
+                              {item}
+                            </Link>
+                          ))}
+                        </div>
+                      </section>
+                    ))}
+                  </div>
+                </div>
               </div>
             )}
           </div>
@@ -331,7 +347,7 @@ export function Header() {
               </button>
             </div>
 
-            <nav className="mt-8 px-5">
+            <nav className="mobile-menu-scroll mt-8 overflow-y-auto px-5 pb-28">
               <NavLink
                 to="/"
                 end
@@ -355,35 +371,23 @@ export function Header() {
 
               {mobileShopOpen ? (
                 <div className="mt-2 overflow-hidden border border-[#d8d8d8] bg-white text-ink">
-                  {[
-                    { name: 'Dog', image: tileDog },
-                    { name: 'Cat', image: tileCat, active: true },
-                    { name: 'Food' },
-                    { name: 'Toys', active: true },
-                    { name: 'Grooming' },
-                    { name: 'Clothing' },
-                    { name: 'Fish', image: tileFish },
-                    { name: 'Bird', image: blog1 },
-                    { name: 'Chicken', image: pick1 },
-                  ].map((row) => (
+                  {shopCategories.slice(1).map((row) => (
                     <Link
-                      key={row.name}
-                      to="/shop"
+                      key={row.key}
+                      to={`/shop?category=${row.key}`}
                       onClick={() => {
                         setMobileOpen(false);
                         setMobileShopOpen(false);
                       }}
-                      className={`flex h-14 items-center border-b border-[#e5e5e5] px-3 text-[14px] ${
-                        row.active ? 'bg-[#1c1c1c] text-white' : 'bg-white text-[#666]'
-                      }`}
+                      className="flex h-16 items-center border-b border-[#e5e5e5] bg-white px-3 text-[14px] text-[#333] transition hover:bg-[#fff1f1]"
                     >
                       {row.image ? (
-                        <img src={row.image} alt="" className="mr-3 h-[40px] w-[64px] object-cover" />
+                        <img src={row.image} alt="" className="mr-3 h-[46px] w-[70px] object-cover" />
                       ) : (
                         <span className="mr-3 inline-block w-[64px]" />
                       )}
-                      <span className="flex-1">{row.name}</span>
-                      {row.name === 'Cat' ? <span className="text-[24px]">→</span> : null}
+                      <span className="flex-1 font-semibold">{row.label}</span>
+                      <span className="text-[24px] text-[#b42323]">›</span>
                     </Link>
                   ))}
                 </div>

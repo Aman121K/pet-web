@@ -113,7 +113,7 @@ export function TopPicks() {
           <ArrowUpRight aria-hidden size={13} strokeWidth={1.8} />
         </button>
 
-        <div className="mt-8 flex w-full flex-col items-center xl:hidden">
+        <div className="mt-8 flex w-full flex-col items-center md:hidden">
           <ProductCard {...picks[activeIndex]} />
           <div className="mt-[28px] flex items-center justify-center gap-12">
             <button
@@ -135,12 +135,18 @@ export function TopPicks() {
           </div>
         </div>
 
-        <div className="mt-[56px] hidden w-full overflow-x-auto xl:relative xl:block xl:h-[476px] xl:max-w-[1344px] xl:overflow-hidden">
-          <div className="hidden xl:absolute xl:left-0 xl:top-[207.5px] xl:block">
+        <div className="mt-10 hidden w-full justify-center gap-6 md:grid xl:hidden [grid-template-columns:repeat(auto-fit,minmax(260px,294px))]">
+          {picks.slice(0, 6).map((product) => (
+            <ProductCard key={product.id} {...product} />
+          ))}
+        </div>
+
+        <div className="mt-[44px] hidden w-full xl:relative xl:block xl:h-[516px] xl:max-w-[1344px] xl:overflow-visible">
+          <div className="hidden xl:absolute xl:left-0 xl:top-[227.5px] xl:block">
             <Arrow direction="prev" onClick={handlePrev} />
           </div>
 
-          <div className="min-w-max xl:absolute xl:left-12 xl:top-0 xl:h-[476px] xl:w-[1248px] xl:min-w-0 xl:overflow-hidden">
+          <div className="min-w-max xl:absolute xl:left-12 xl:top-0 xl:h-[516px] xl:w-[1248px] xl:min-w-0 xl:overflow-x-hidden xl:overflow-y-visible xl:py-5">
             <div
               className="flex gap-6 transition-transform duration-500 ease-out"
               style={{ transform: `translateX(-${slideOffset}px)` }}
@@ -151,7 +157,7 @@ export function TopPicks() {
             </div>
           </div>
 
-          <div className="hidden xl:absolute xl:right-0 xl:top-[207.5px] xl:block">
+          <div className="hidden xl:absolute xl:right-0 xl:top-[227.5px] xl:block">
             <Arrow direction="next" onClick={handleNext} />
           </div>
         </div>

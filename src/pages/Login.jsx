@@ -48,7 +48,7 @@ export function Login() {
     <>
       <FeatureBar />
       <section className="bg-gradient-to-b from-surface to-white px-4 py-10 sm:px-6 lg:px-8 lg:py-14">
-        <div className="mx-auto grid w-full max-w-[1060px] overflow-hidden rounded-2xl border border-line bg-white shadow-[0_20px_70px_rgba(17,17,17,0.08)] lg:grid-cols-2">
+        <div className="mx-auto grid w-full max-w-[1060px] overflow-hidden rounded-none border border-line bg-white shadow-[0_20px_70px_rgba(17,17,17,0.08)] lg:grid-cols-2">
           <div className="relative hidden bg-ink p-10 text-white lg:block">
             <p className="text-[12px] uppercase tracking-[0.2em] text-white/70">PET SQUARE</p>
             <h1 className="mt-4 text-[38px] font-semibold leading-tight tracking-tight">
