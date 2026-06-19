@@ -1,5 +1,7 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ChevronRight, ChevronDown, ArrowUpRight } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { fetchFaqs } from '../../api.js';
 
 /* ─── Decorative paw-print icon ─────────────────────────────────────── */
 function PawPrint({ size = 48, className = '' }) {
@@ -79,7 +81,24 @@ function FaqItem({ q, a, isOpen, onClick }) {
 
 /* ─── Section ────────────────────────────────────────────────────────── */
 export function FaqBlock() {
+  const [faqItems, setFaqItems] = useState(items);
   const [openIdx, setOpenIdx] = useState(2);
+
+  useEffect(() => {
+    fetchFaqs('home')
+      .then((rows) => {
+        if (Array.isArray(rows) && rows.length > 0) {
+          setFaqItems(
+            rows.slice(0, 3).map((row, index) => ({
+              q: `${index + 1}. ${row.question || ''}`,
+              a: row.answer || '',
+            }))
+          );
+          setOpenIdx(0);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   return (
     <section className="relative overflow-hidden bg-surface py-16 md:py-24">
@@ -104,7 +123,7 @@ export function FaqBlock() {
 
           {/* Accordion list */}
           <div className="flex flex-col gap-[29px]">
-            {items.map((item, idx) => (
+            {faqItems.map((item, idx) => (
               <FaqItem
                 key={item.q}
                 q={item.q}
@@ -117,13 +136,13 @@ export function FaqBlock() {
 
           {/* View all link */}
           <div className="flex justify-center">
-            <button
-              type="button"
+            <Link
+              to="/faq"
               className="flex items-center gap-[8px] text-[13px] font-semibold leading-[16px] text-ink transition hover:text-black"
             >
               <span className="underline underline-offset-2">View all</span>
               <ArrowUpRight aria-hidden size={13} strokeWidth={1.8} />
-            </button>
+            </Link>
           </div>
 
         </div>

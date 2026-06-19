@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { fetchProductBySlug } from '../api.js';
+import { fetchProductBySlug, formatMoney } from '../api.js';
 import { FeatureBar } from '../components/FeatureBar.jsx';
 import { MailingList } from '../components/home/MailingList.jsx';
 import { addToCartAndOpen } from '../components/CartDrawer.jsx';
@@ -82,6 +82,8 @@ export function ProductDetails() {
       slug: apiProduct?.slug || slug,
       category: apiProduct?.category?.name || 'Fresh Food',
       price: Number(apiProduct?.price || 100),
+      currencyCode: apiProduct?.currency_code || 'NZD',
+      formattedPrice: apiProduct?.formatted_price || formatMoney(apiProduct?.price || 100, apiProduct?.currency_code || 'NZD'),
       description:
         apiProduct?.description ||
         'H2 - Large exceptional bouquet composed of a selection of David Austin roses. Large exceptional bouquet composed of a selection of David Austin roses.',
@@ -115,7 +117,7 @@ export function ProductDetails() {
       sku: product.sku,
       offers: {
         '@type': 'Offer',
-        priceCurrency: 'USD',
+        priceCurrency: product.currencyCode,
         price: product.price,
         availability: 'https://schema.org/InStock',
         url: canonicalUrl,
@@ -152,7 +154,7 @@ export function ProductDetails() {
           <span className="px-2">&gt;</span>
           <Link to="/shop" className="hover:text-ink">Categories</Link>
           <span className="px-2">&gt;</span>
-          <span>{product.name} - ${product.price.toFixed(0)}</span>
+          <span>{product.name} - {product.formattedPrice}</span>
         </div>
       </section>
 
@@ -180,7 +182,7 @@ export function ProductDetails() {
             <aside className="rounded-xl border border-line bg-white p-5 md:p-7">
               <p className="text-[12px] text-muted">{product.category}</p>
               <h1 className="mt-2 text-[32px] font-semibold leading-[1.05] tracking-tight text-ink md:text-[44px]">
-                H1 - {product.name} - ${product.price.toFixed(0)}
+                {product.name} - {product.formattedPrice}
               </h1>
               <div className="mt-4 text-[12px] leading-5 text-muted" dangerouslySetInnerHTML={{ __html: product.description }} />
               <p className="mt-2 text-[12px] leading-5 text-muted">
@@ -217,6 +219,7 @@ export function ProductDetails() {
                 onClick={() =>
                   addToCartAndOpen({
                     id: `detail-${slug || product.name}`,
+                    variant_id: apiProduct?.variant_id || apiProduct?.variants?.[0]?.id,
                     title: product.name,
                     image: mainImage,
                     price: product.price,

@@ -4,6 +4,7 @@ export function PrivacyPolicy() {
   return (
     <InfoPageLayout
       title="Privacy Policy"
+      pageKey="privacy-policy"
       active="Privacy Policy"
       intro="We value your privacy and handle your data responsibly, only for order fulfillment, support, and service improvements."
       sections={[

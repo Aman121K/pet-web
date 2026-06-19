@@ -4,6 +4,7 @@ export function Terms() {
   return (
     <InfoPageLayout
       title="Terms & Conditions"
+      pageKey="terms"
       active="Terms & Conditions"
       intro="By using Pet Square, you agree to these terms covering orders, account usage, and general platform policies."
       sections={[

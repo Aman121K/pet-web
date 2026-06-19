@@ -10,14 +10,14 @@ function calcSalePercent(compareAt, price) {
   return pct > 0 ? pct : null;
 }
 
-export function ProductCard({ image, title, brand, compareAt, price, quantity = 1 }) {
+export function ProductCard({ id, slug, image, title, brand, compareAt, price, rawPrice, quantity = 1 }) {
   const [qty, setQty] = useState(quantity);
   const salePercent = calcSalePercent(compareAt, price);
   const fallbackSlug = String(title || 'product')
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '');
-  const to = `/product-details/${fallbackSlug || 'product'}`;
+  const to = `/product-details/${slug || fallbackSlug || 'product'}`;
 
   return (
     <article className="home-product-card product-hover-card flex h-[525px] w-[min(324px,calc(100vw-32px))] flex-none flex-col border border-transparent bg-white p-[13px] shadow-[inset_0_0_0_1px_#1C1C1C] sm:h-[476px] sm:w-[294px]">
@@ -77,7 +77,8 @@ export function ProductCard({ image, title, brand, compareAt, price, quantity = 
                 id: to,
                 title,
                 image,
-                price: parseFloat(String(price).replace(/[^0-9.]/g, '')) || 0,
+                variant_id: id,
+                price: Number(rawPrice) || parseFloat(String(price).replace(/[^0-9.]/g, '')) || 0,
                 qty,
               })
             }

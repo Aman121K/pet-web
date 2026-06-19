@@ -37,7 +37,7 @@ export function Home() {
                   <span className="mt-3 block">{banner?.subtitle || 'your pets at Pet Square.'}</span>
                 </h1>
                 <p className="mt-5 max-w-[540px] text-[15px] leading-7 text-white/75 md:text-[17px]">
-                  Shop food, care, toys, and accessories organized by pet type and daily routine.
+                  {banner?.intro || 'Shop food, care, toys, and accessories organized by pet type and daily routine.'}
                 </p>
                 <Link
                   to={banner?.ctaLink || '/shop'}
@@ -57,7 +57,7 @@ export function Home() {
             <div className="relative flex h-[320px] items-center justify-center overflow-hidden bg-[#e7e7e7] md:h-full">
               <div className="absolute h-[260px] w-[260px] bg-white shadow-[0_20px_50px_rgba(15,23,42,0.08)] sm:h-[300px] sm:w-[300px] md:h-[380px] md:w-[380px]" />
               <img
-                src={heroImage}
+                src={banner?.imageUrl || banner?.image_url || heroImage}
                 alt="Pet hero"
                 className="relative z-10 h-auto w-[410px] max-w-none object-contain sm:w-[480px] md:w-[560px]"
               />

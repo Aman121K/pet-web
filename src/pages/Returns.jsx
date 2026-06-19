@@ -4,6 +4,7 @@ export function Returns() {
   return (
     <InfoPageLayout
       title="Returns"
+      pageKey="returns"
       active="Returns"
       intro="If something is not right with your order, we offer a clear return and refund flow to resolve it quickly."
       sections={[

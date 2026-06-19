@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ArrowLeft, ArrowRight, ArrowUpRight } from 'lucide-react';
 import pick1 from '../../assets/pets/home/pick-1.jpg';
 import pick2 from '../../assets/pets/home/pick-2.jpg';
@@ -8,6 +8,7 @@ import product3 from '../../assets/pets/product-3.jpg';
 import tileCat2 from '../../assets/pets/home/tile-cat-2.jpg';
 import { ProductCard } from './ProductCard.jsx';
 import { SectionHeading } from './SectionHeading.jsx';
+import { fetchProducts } from '../../api.js';
 
 const VISIBLE_CARDS = 4;
 const CARD_WIDTH = 294;
@@ -87,9 +88,33 @@ function Arrow({ direction, onClick }) {
 }
 
 export function TopPicks() {
+  const [products, setProducts] = useState(picks);
   const [activeIndex, setActiveIndex] = useState(0);
-  const maxDesktopIndex = Math.max(0, picks.length - VISIBLE_CARDS);
-  const maxMobileIndex = Math.max(0, picks.length - 1);
+
+  useEffect(() => {
+    fetchProducts()
+      .then((items) => {
+        if (items && items.length > 0) {
+          setProducts(
+            items.slice(0, 8).map((p, i) => ({
+              id: String(p.id),
+              slug: p.slug,
+              image: p.image_url || picks[i % picks.length].image,
+              title: p.name,
+              brand: p.brand || 'Pet Square',
+              compareAt: p.formatted_compare_at_price,
+              price: p.formatted_price,
+              rawPrice: p.price,
+              quantity: 1,
+            }))
+          );
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  const maxDesktopIndex = Math.max(0, products.length - VISIBLE_CARDS);
+  const maxMobileIndex = Math.max(0, products.length - 1);
   const slideOffset = Math.min(activeIndex, maxDesktopIndex) * (CARD_WIDTH + CARD_GAP);
 
   function handlePrev() {
@@ -114,7 +139,7 @@ export function TopPicks() {
         </button>
 
         <div className="mt-8 flex w-full flex-col items-center md:hidden">
-          <ProductCard {...picks[activeIndex]} />
+          <ProductCard {...products[activeIndex % products.length]} />
           <div className="mt-[28px] flex items-center justify-center gap-12">
             <button
               type="button"
@@ -136,7 +161,7 @@ export function TopPicks() {
         </div>
 
         <div className="mt-10 hidden w-full justify-center gap-6 md:grid xl:hidden [grid-template-columns:repeat(auto-fit,minmax(260px,294px))]">
-          {picks.slice(0, 6).map((product) => (
+          {products.slice(0, 6).map((product) => (
             <ProductCard key={product.id} {...product} />
           ))}
         </div>
@@ -151,7 +176,7 @@ export function TopPicks() {
               className="flex gap-6 transition-transform duration-500 ease-out"
               style={{ transform: `translateX(-${slideOffset}px)` }}
             >
-              {picks.map((product) => (
+              {products.map((product) => (
                 <ProductCard key={product.id} {...product} />
               ))}
             </div>

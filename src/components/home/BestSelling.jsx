@@ -95,13 +95,13 @@ export function BestSelling() {
         if (items && items.length > 0) {
           const mapped = items.map((p, i) => ({
             id: String(p.id),
+            slug: p.slug,
             image: p.image_url || FALLBACK_PRODUCTS[i % FALLBACK_PRODUCTS.length].image,
             title: p.name,
             brand: p.brand || 'Canagan',
-            compareAt: p.compare_at_price
-              ? `$${Number(p.compare_at_price).toFixed(2)}`
-              : `$${(Number(p.price) * 1.05).toFixed(2)}`,
-            price: `$${Number(p.price).toFixed(2)}`,
+            compareAt: p.formatted_compare_at_price,
+            price: p.formatted_price,
+            rawPrice: p.price,
             quantity: 1,
           }));
           setProducts(mapped);

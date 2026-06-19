@@ -5,6 +5,7 @@ import { FeatureBar } from '../components/FeatureBar.jsx';
 import { MailingList } from '../components/home/MailingList.jsx';
 import { addToCartAndOpen } from '../components/CartDrawer.jsx';
 import { getShopCategory, shopCategories } from '../data/shopCategories.js';
+import { fetchFaqs, fetchProducts, formatMoney } from '../api.js';
 import heroDogs from '../assets/pets/hero.jpg';
 import infoImage from '../assets/pets/modal-left.jpg';
 import product1 from '../assets/pets/product-1.jpg';
@@ -36,8 +37,8 @@ const baseCards = [
 ];
 
 function ProductCell({ item, qty, onIncrease, onDecrease }) {
-  const { image, sale, title, brand, compareAt, price } = item;
-  const slug = String(title || 'product')
+  const { image, sale, title, brand, compareAt, price, currencyCode, rawPrice } = item;
+  const slug = String(item.slug || title || 'product')
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '');
@@ -48,9 +49,11 @@ function ProductCell({ item, qty, onIncrease, onDecrease }) {
         <Link to={to} className="block h-full w-full">
           <img src={image} alt="" className="h-full w-full object-cover transition duration-300 hover:scale-[1.03]" />
         </Link>
-        <span className="absolute right-2 top-2 rounded-md bg-rose-600 px-2 py-1 text-[10px] font-semibold text-white">
-          -{sale}%
-        </span>
+        {sale > 0 ? (
+          <span className="absolute right-2 top-2 rounded-md bg-rose-600 px-2 py-1 text-[10px] font-semibold text-white">
+            -{sale}%
+          </span>
+        ) : null}
       </div>
       <div className="p-3">
         <Link to={to}>
@@ -60,8 +63,12 @@ function ProductCell({ item, qty, onIncrease, onDecrease }) {
         </Link>
         <p className="mt-1 text-[12px] text-muted">{brand}</p>
         <div className="mt-2 flex items-center gap-2 text-[13px]">
-          <span className="text-muted line-through">${compareAt.toFixed(2)}</span>
-          <span className="font-semibold text-ink">${price.toFixed(2)}</span>
+          <span className="text-muted line-through">
+            {typeof compareAt === 'number' ? formatMoney(compareAt, currencyCode) : compareAt}
+          </span>
+          <span className="font-semibold text-ink">
+            {typeof price === 'number' ? formatMoney(price, currencyCode) : price}
+          </span>
         </div>
         <div className="product-cell-actions mt-3 flex items-center gap-2">
           <div className="inline-flex h-8 items-center rounded-lg border border-line bg-white">
@@ -71,7 +78,7 @@ function ProductCell({ item, qty, onIncrease, onDecrease }) {
           </div>
           <button
             type="button"
-            onClick={() => addToCartAndOpen({ id: item.id, title, image, price, qty })}
+            onClick={() => addToCartAndOpen({ id: item.id, variant_id: item.variant_id, title, image, price: rawPrice || price, qty })}
             className="pet-btn-primary ml-auto h-8 px-3 text-[11px]"
           >
             Add
@@ -211,6 +218,18 @@ function CategoryExplorer({ activeCategory, activeSubcategory, onCategoryChange,
 }
 
 function CategoryFaq() {
+  const [items, setItems] = useState(categoryFaqs);
+
+  useEffect(() => {
+    fetchFaqs('category')
+      .then((rows) => {
+        if (Array.isArray(rows) && rows.length > 0) {
+          setItems(rows.map((row) => ({ question: row.question, answer: row.answer })));
+        }
+      })
+      .catch(() => {});
+  }, []);
+
   return (
     <section className="mt-10 border border-line bg-white p-4 sm:p-6 lg:p-8">
       <div className="grid gap-6 lg:grid-cols-[320px_1fr]">
@@ -224,7 +243,7 @@ function CategoryFaq() {
           </p>
         </div>
         <div className="divide-y divide-line border border-line">
-          {categoryFaqs.map((item) => (
+          {items.map((item) => (
             <details key={item.question} className="group bg-white p-4 open:bg-[#fffafa]">
               <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-[15px] font-semibold text-ink">
                 {item.question}
@@ -260,15 +279,40 @@ export function Shop() {
   const params = new URLSearchParams(location.search);
   const initialCategory = params.get('category') || 'all';
   const initialSubcategory = params.get('subcategory') || '';
-  const [qtyById, setQtyById] = useState(() =>
-    Object.fromEntries(baseCards.map((c) => [c.id, 1]))
-  );
+  const [products, setProducts] = useState(baseCards);
+  const [qtyById, setQtyById] = useState(() => Object.fromEntries(baseCards.map((c) => [c.id, 1])));
   const [category, setCategory] = useState(() => getShopCategory(initialCategory).key);
   const [subcategory, setSubcategory] = useState(initialSubcategory);
   const [priceRange, setPriceRange] = useState('all');
   const [rating, setRating] = useState('all');
   const [sortBy, setSortBy] = useState('latest');
   const selectedCategory = getShopCategory(category);
+
+  useEffect(() => {
+    fetchProducts()
+      .then((items) => {
+        if (Array.isArray(items) && items.length > 0) {
+          const mapped = items.map((p, index) => ({
+            id: p.id,
+            variant_id: p.variants?.[0]?.id,
+            slug: p.slug,
+            image: p.image_url || baseCards[index % baseCards.length].image,
+            sale: 0,
+            title: p.name,
+            brand: p.brand || 'Pet Square',
+            compareAt: p.compare_at_price,
+            price: p.price,
+            rawPrice: p.price,
+            currencyCode: p.currency_code,
+            rating: 5,
+            category: String(p.category?.name || '').toLowerCase(),
+          }));
+          setProducts(mapped);
+          setQtyById(Object.fromEntries(mapped.map((c) => [c.id, 1])));
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -284,8 +328,14 @@ export function Shop() {
   }, [location.search]);
 
   const cards = useMemo(() => {
-    let rows = [...baseCards];
-    if (selectedCategory.productFilter !== 'all') rows = rows.filter((r) => r.category === selectedCategory.productFilter);
+    let rows = [...products];
+    if (selectedCategory.productFilter !== 'all') {
+      rows = rows.filter(
+        (r) =>
+          r.category === selectedCategory.productFilter ||
+          r.category.includes(selectedCategory.productFilter)
+      );
+    }
     if (priceRange === 'low') rows = rows.filter((r) => r.price < 210);
     if (priceRange === 'mid') rows = rows.filter((r) => r.price >= 210 && r.price <= 216);
     if (priceRange === 'high') rows = rows.filter((r) => r.price > 216);
@@ -296,7 +346,7 @@ export function Shop() {
     if (sortBy === 'priceHigh') rows.sort((a, b) => b.price - a.price);
     if (sortBy === 'ratingHigh') rows.sort((a, b) => b.rating - a.rating);
     return rows;
-  }, [selectedCategory.productFilter, priceRange, rating, sortBy]);
+  }, [products, selectedCategory.productFilter, priceRange, rating, sortBy]);
 
   const total = cards.length;
 

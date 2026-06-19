@@ -1,4 +1,6 @@
 import { Link } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { fetchPage } from '../api.js';
 
 const tabs = [
   { label: 'Shipping', to: '/shipping' },
@@ -7,7 +9,33 @@ const tabs = [
   { label: 'Privacy Policy', to: '/privacy-policy' },
 ];
 
-export function InfoPageLayout({ title, intro, sections, active }) {
+export function InfoPageLayout({ title, intro, sections, active, pageKey }) {
+  const [managedPage, setManagedPage] = useState(null);
+
+  useEffect(() => {
+    let mounted = true;
+
+    if (!pageKey) {
+      return undefined;
+    }
+
+    fetchPage(pageKey)
+      .then((page) => {
+        if (mounted) setManagedPage(page);
+      })
+      .catch(() => {
+        if (mounted) setManagedPage(null);
+      });
+
+    return () => {
+      mounted = false;
+    };
+  }, [pageKey]);
+
+  const pageTitle = managedPage?.title || title;
+  const pageIntro = managedPage?.intro || intro;
+  const pageSections = managedPage?.sections?.length ? managedPage.sections : sections;
+
   return (
     <section className="bg-surface py-8 md:py-12">
       <div className="pet-page-shell">
@@ -34,11 +62,11 @@ export function InfoPageLayout({ title, intro, sections, active }) {
           </aside>
 
           <article className="pet-card p-6 md:p-8">
-            <h1 className="text-[32px] font-semibold leading-tight tracking-tight text-ink md:text-[40px]">{title}</h1>
-            <p className="mt-3 max-w-[760px] text-[14px] leading-7 text-muted md:text-[15px]">{intro}</p>
+            <h1 className="text-[32px] font-semibold leading-tight tracking-tight text-ink md:text-[40px]">{pageTitle}</h1>
+            <p className="mt-3 max-w-[760px] text-[14px] leading-7 text-muted md:text-[15px]">{pageIntro}</p>
 
             <div className="mt-8 space-y-5">
-              {sections.map((s) => (
+              {pageSections.map((s) => (
                 <section key={s.heading} className="rounded-xl border border-line bg-surface p-5">
                   <h3 className="text-[18px] font-semibold text-ink">{s.heading}</h3>
                   <p className="mt-2 text-[14px] leading-7 text-muted">{s.body}</p>

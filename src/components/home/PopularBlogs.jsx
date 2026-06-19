@@ -1,11 +1,13 @@
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
+import { useEffect, useMemo, useState } from 'react';
+import { fetchBlogs } from '../../api.js';
 import blog1 from '../../assets/pets/home/blog-1.jpg';
 import blog2 from '../../assets/pets/home/blog-2.jpg';
 import blog3 from '../../assets/pets/home/blog-3.jpg';
 
 /* ─── Data ──────────────────────────────────────────────────────────────── */
-const posts = [
+const fallbackPosts = [
   {
     slug: 'pet-nutrition-101',
     title: 'Pet Nutrition 101',
@@ -34,6 +36,13 @@ const posts = [
     img: blog3,
   },
 ];
+
+function formatDate(value) {
+  if (!value) return '';
+  const d = new Date(value);
+  if (Number.isNaN(d.getTime())) return '';
+  return d.toLocaleDateString(undefined, { month: 'short', day: '2-digit', year: 'numeric' });
+}
 
 /* ─── Card ───────────────────────────────────────────────────────────────── */
 function BlogCard({ slug, title, description, author, date, img }) {
@@ -100,6 +109,40 @@ function BlogCard({ slug, title, description, author, date, img }) {
 
 /* ─── Section ────────────────────────────────────────────────────────────── */
 export function PopularBlogs() {
+  const [remotePosts, setRemotePosts] = useState([]);
+
+  useEffect(() => {
+    let mounted = true;
+
+    (async () => {
+      try {
+        const rows = await fetchBlogs();
+        if (mounted) setRemotePosts(Array.isArray(rows) ? rows.slice(0, 3) : []);
+      } catch (err) {
+        if (mounted) setRemotePosts([]);
+      }
+    })();
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  const posts = useMemo(() => {
+    if (!remotePosts.length) return fallbackPosts;
+
+    const fallbackImages = [blog1, blog2, blog3];
+
+    return remotePosts.map((post, index) => ({
+      slug: post.slug,
+      title: post.title,
+      description: post.excerpt,
+      author: post.authorName || 'Pet Square Team',
+      date: formatDate(post.publishedAt || post.createdAt),
+      img: post.featuredImageUrl || fallbackImages[index % fallbackImages.length],
+    }));
+  }, [remotePosts]);
+
   return (
     <section className="bg-white py-16 md:py-24">
       <div className="mx-auto max-w-[1440px] px-4 sm:px-8 md:px-16">

@@ -4,6 +4,7 @@ export function Shipping() {
   return (
     <InfoPageLayout
       title="Shipping"
+      pageKey="shipping"
       active="Shipping"
       intro="We process and dispatch orders quickly with careful packaging so your pet essentials arrive safely and on time."
       sections={[

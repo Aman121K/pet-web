@@ -1,4 +1,6 @@
 import { Link } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { fetchFaqs } from '../api.js';
 import product1 from '../assets/pets/product-1.jpg';
 
 const checkoutFaqs = [
@@ -34,6 +36,18 @@ function Field({ label, placeholder, type = 'text' }) {
 }
 
 function CheckoutFaq() {
+  const [items, setItems] = useState(checkoutFaqs);
+
+  useEffect(() => {
+    fetchFaqs('checkout')
+      .then((rows) => {
+        if (Array.isArray(rows) && rows.length > 0) {
+          setItems(rows.map((row) => ({ question: row.question, answer: row.answer })));
+        }
+      })
+      .catch(() => {});
+  }, []);
+
   return (
     <section className="mt-6 border border-line bg-white p-4 sm:p-6 lg:p-7">
       <div className="grid gap-5 lg:grid-cols-[280px_1fr]">
@@ -47,7 +61,7 @@ function CheckoutFaq() {
           </p>
         </div>
         <div className="divide-y divide-line border border-line">
-          {checkoutFaqs.map((item) => (
+          {items.map((item) => (
             <details key={item.question} className="group p-4 open:bg-[#fffafa]">
               <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-[15px] font-semibold text-ink">
                 {item.question}

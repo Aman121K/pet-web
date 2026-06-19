@@ -55,18 +55,34 @@ function firstPrice(product) {
 
   const calculated = Number(calc?.calculated_amount ?? 0);
   const original = Number(calc?.original_amount ?? (calculated || 0));
+  const currencyCode = String(calc?.currency_code || calc?.currencyCode || 'NZD').toUpperCase();
 
   if (Number.isFinite(calculated) && calculated > 0) {
     return {
       price: calculated,
       compareAt: original > calculated ? original : Number((calculated * 1.05).toFixed(2)),
+      currencyCode,
     };
   }
 
   return {
     price: 0,
     compareAt: 0,
+    currencyCode,
   };
+}
+
+export function formatMoney(amount, currencyCode = 'NZD') {
+  const value = Number(amount || 0);
+
+  try {
+    return new Intl.NumberFormat(undefined, {
+      style: 'currency',
+      currency: String(currencyCode || 'NZD').toUpperCase(),
+    }).format(value);
+  } catch (err) {
+    return `${String(currencyCode || 'NZD').toUpperCase()} ${value.toFixed(2)}`;
+  }
 }
 
 function toLegacyProduct(product) {
@@ -84,6 +100,10 @@ function toLegacyProduct(product) {
     brand: product.brand || 'Pet Square',
     price: price.price,
     compare_at_price: price.compareAt,
+    currency_code: price.currencyCode,
+    formatted_price: formatMoney(price.price, price.currencyCode),
+    formatted_compare_at_price: formatMoney(price.compareAt, price.currencyCode),
+    variant_id: product.variants?.[0]?.id,
     variants: product.variants || [],
     category: { name: product?.categories?.[0]?.name || 'General' },
     seoTitle: product.title,
@@ -139,7 +159,18 @@ export async function fetchCategories() {
 }
 
 export async function fetchBanners(_position = '') {
-  return tryLegacy('/api/banners');
+  try {
+    const qs = _position ? `?position=${encodeURIComponent(_position)}` : '';
+    const data = await medusaFetch(`/store/banners${qs}`, {}, { publishable: true });
+    return (data.banners || []).map((banner) => ({
+      ...banner,
+      imageUrl: banner.image_url,
+      ctaText: banner.cta_text,
+      ctaLink: banner.link_url,
+    }));
+  } catch (err) {
+    return tryLegacy('/api/banners');
+  }
 }
 
 export async function fetchProductBySlug(slug) {
@@ -231,17 +262,41 @@ export async function validateDiscount(code) {
 }
 
 export async function fetchBlogs() {
-  return tryLegacy('/api/blogs');
+  try {
+    const data = await medusaFetch('/store/blogs', {}, { publishable: true });
+    return data.blogs || [];
+  } catch (err) {
+    return tryLegacy('/api/blogs');
+  }
 }
 
 export async function fetchBlogBySlug(slug) {
-  if (!LEGACY_API) throw new Error('Blog backend is not configured for Medusa-only demo');
-  const res = await fetch(`${LEGACY_API}/api/blogs/${slug}`);
-  const data = await res.json().catch(() => ({}));
-  if (!res.ok) throw new Error(data.error || 'Failed to load blog');
-  return data;
+  try {
+    return await medusaFetch(`/store/blogs/${encodeURIComponent(slug)}`, {}, { publishable: true });
+  } catch (err) {
+    if (!LEGACY_API) throw new Error(err?.message || 'Failed to load blog');
+    const res = await fetch(`${LEGACY_API}/api/blogs/${slug}`);
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(data.error || 'Failed to load blog');
+    return data;
+  }
 }
 
-export async function fetchFaqs() {
-  return tryLegacy('/api/faqs');
+export async function fetchPage(key) {
+  try {
+    const data = await medusaFetch(`/store/pages/${encodeURIComponent(key)}`, {}, { publishable: true });
+    return data.page || null;
+  } catch (err) {
+    return null;
+  }
+}
+
+export async function fetchFaqs(page = '') {
+  try {
+    const qs = page ? `?page=${encodeURIComponent(page)}` : '';
+    const data = await medusaFetch(`/store/faqs${qs}`, {}, { publishable: true });
+    return data.faqs || [];
+  } catch (err) {
+    return tryLegacy('/api/faqs');
+  }
 }
