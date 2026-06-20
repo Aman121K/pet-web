@@ -37,7 +37,7 @@ const baseCards = [
 ];
 
 function ProductCell({ item, qty, onIncrease, onDecrease }) {
-  const { image, sale, title, brand, compareAt, price, currencyCode, rawPrice } = item;
+  const { image, fallbackImage, sale, title, brand, compareAt, price, currencyCode, rawPrice } = item;
   const canAdd = item.hasPrice !== false;
   const slug = String(item.slug || title || 'product')
     .toLowerCase()
@@ -48,7 +48,16 @@ function ProductCell({ item, qty, onIncrease, onDecrease }) {
     <article className="product-hover-card pet-card overflow-hidden">
       <div className="relative aspect-[1.15] overflow-hidden bg-surface">
         <Link to={to} className="block h-full w-full">
-          <img src={image} alt="" className="h-full w-full object-cover transition duration-300 hover:scale-[1.03]" />
+          <img
+            src={image || fallbackImage}
+            alt=""
+            className="h-full w-full object-cover transition duration-300 hover:scale-[1.03]"
+            onError={(event) => {
+              if (fallbackImage && event.currentTarget.src !== fallbackImage) {
+                event.currentTarget.src = fallbackImage;
+              }
+            }}
+          />
         </Link>
         {sale > 0 ? (
           <span className="absolute right-2 top-2 rounded-md bg-rose-600 px-2 py-1 text-[10px] font-semibold text-white">
@@ -301,6 +310,7 @@ export function Shop() {
             variant_id: p.variants?.[0]?.id,
             slug: p.slug,
             image: p.image_url || baseCards[index % baseCards.length].image,
+            fallbackImage: baseCards[index % baseCards.length].image,
             sale: 0,
             title: p.name,
             brand: p.brand || 'Pet Square',

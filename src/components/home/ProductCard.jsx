@@ -10,7 +10,7 @@ function calcSalePercent(compareAt, price) {
   return pct > 0 ? pct : null;
 }
 
-export function ProductCard({ id, variantId, slug, image, title, brand, compareAt, price, rawPrice, hasPrice = true, quantity = 1 }) {
+export function ProductCard({ id, variantId, slug, image, fallbackImage, title, brand, compareAt, price, rawPrice, hasPrice = true, quantity = 1 }) {
   const [qty, setQty] = useState(quantity);
   const salePercent = calcSalePercent(compareAt, price);
   const fallbackSlug = String(title || 'product')
@@ -23,7 +23,16 @@ export function ProductCard({ id, variantId, slug, image, title, brand, compareA
     <article className="home-product-card product-hover-card flex h-[525px] w-[min(324px,calc(100vw-32px))] flex-none flex-col border border-transparent bg-white p-[13px] shadow-[inset_0_0_0_1px_#1C1C1C] sm:h-[476px] sm:w-[294px]">
       <div className="relative h-[224px] w-full overflow-hidden bg-white sm:h-[203px]">
         <Link to={to} className="block h-full w-full">
-          <img src={image} alt={title} className="h-full w-full object-cover" />
+          <img
+            src={image || fallbackImage}
+            alt={title}
+            className="h-full w-full object-cover"
+            onError={(event) => {
+              if (fallbackImage && event.currentTarget.src !== fallbackImage) {
+                event.currentTarget.src = fallbackImage;
+              }
+            }}
+          />
         </Link>
         {salePercent !== null && (
           <span className="absolute right-0 top-0 flex h-[30px] items-center rounded-[4px] bg-[#D63B3B] px-[10px] text-[16px] font-normal leading-none tracking-normal text-white">

@@ -98,6 +98,7 @@ export function BestSelling() {
             variantId: p.variant_id,
             slug: p.slug,
             image: p.image_url || FALLBACK_PRODUCTS[i % FALLBACK_PRODUCTS.length].image,
+            fallbackImage: FALLBACK_PRODUCTS[i % FALLBACK_PRODUCTS.length].image,
             title: p.name,
             brand: p.brand || 'Canagan',
             compareAt: p.formatted_compare_at_price,

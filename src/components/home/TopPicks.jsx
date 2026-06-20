@@ -101,6 +101,7 @@ export function TopPicks() {
               variantId: p.variant_id,
               slug: p.slug,
               image: p.image_url || picks[i % picks.length].image,
+              fallbackImage: picks[i % picks.length].image,
               title: p.name,
               brand: p.brand || 'Pet Square',
               compareAt: p.formatted_compare_at_price,

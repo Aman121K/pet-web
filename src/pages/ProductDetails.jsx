@@ -166,7 +166,16 @@ export function ProductDetails() {
           <div className="grid gap-5 lg:grid-cols-[1.1fr_1fr]">
             <div>
               <div className="overflow-hidden rounded-xl border border-line bg-white">
-                <img src={mainImage} alt={product.imageAltText} className="h-[260px] w-full object-cover md:h-[420px]" />
+                <img
+                  src={mainImage || product1}
+                  alt={product.imageAltText}
+                  className="h-[260px] w-full object-cover md:h-[420px]"
+                  onError={(event) => {
+                    if (event.currentTarget.src !== product1) {
+                      event.currentTarget.src = product1;
+                    }
+                  }}
+                />
               </div>
               <div className="mt-3 flex items-center gap-2 overflow-x-auto">
                 {thumbs.map((img, i) => (
