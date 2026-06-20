@@ -38,6 +38,7 @@ const baseCards = [
 
 function ProductCell({ item, qty, onIncrease, onDecrease }) {
   const { image, sale, title, brand, compareAt, price, currencyCode, rawPrice } = item;
+  const canAdd = item.hasPrice !== false;
   const slug = String(item.slug || title || 'product')
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, '-')
@@ -63,9 +64,11 @@ function ProductCell({ item, qty, onIncrease, onDecrease }) {
         </Link>
         <p className="mt-1 text-[12px] text-muted">{brand}</p>
         <div className="mt-2 flex items-center gap-2 text-[13px]">
-          <span className="text-muted line-through">
-            {typeof compareAt === 'number' ? formatMoney(compareAt, currencyCode) : compareAt}
-          </span>
+          {compareAt ? (
+            <span className="text-muted line-through">
+              {typeof compareAt === 'number' ? formatMoney(compareAt, currencyCode) : compareAt}
+            </span>
+          ) : null}
           <span className="font-semibold text-ink">
             {typeof price === 'number' ? formatMoney(price, currencyCode) : price}
           </span>
@@ -78,10 +81,11 @@ function ProductCell({ item, qty, onIncrease, onDecrease }) {
           </div>
           <button
             type="button"
+            disabled={!canAdd}
             onClick={() => addToCartAndOpen({ id: item.id, variant_id: item.variant_id, title, image, price: rawPrice || price, qty })}
-            className="pet-btn-primary ml-auto h-8 px-3 text-[11px]"
+            className="pet-btn-primary ml-auto h-8 px-3 text-[11px] disabled:cursor-not-allowed disabled:bg-muted"
           >
-            Add
+            {canAdd ? 'Add' : 'Unavailable'}
           </button>
         </div>
       </div>
@@ -304,6 +308,7 @@ export function Shop() {
             price: p.price,
             rawPrice: p.price,
             currencyCode: p.currency_code,
+            hasPrice: p.has_price,
             rating: 5,
             category: String(p.category?.name || '').toLowerCase(),
           }));

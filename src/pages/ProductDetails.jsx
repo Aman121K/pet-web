@@ -81,8 +81,9 @@ export function ProductDetails() {
       name: apiProduct?.name || title,
       slug: apiProduct?.slug || slug,
       category: apiProduct?.category?.name || 'Fresh Food',
-      price: Number(apiProduct?.price || 100),
+      price: apiProduct?.has_price === false ? null : Number(apiProduct?.price || 100),
       currencyCode: apiProduct?.currency_code || 'NZD',
+      hasPrice: apiProduct?.has_price !== false,
       formattedPrice: apiProduct?.formatted_price || formatMoney(apiProduct?.price || 100, apiProduct?.currency_code || 'NZD'),
       description:
         apiProduct?.description ||
@@ -118,7 +119,7 @@ export function ProductDetails() {
       offers: {
         '@type': 'Offer',
         priceCurrency: product.currencyCode,
-        price: product.price,
+        price: product.price || 0,
         availability: 'https://schema.org/InStock',
         url: canonicalUrl,
       },
@@ -129,6 +130,8 @@ export function ProductDetails() {
   useEffect(() => {
     setMainImage(product.image || product1);
   }, [product.image]);
+
+  const canAddToCart = product.hasPrice;
 
   const thumbs = product.gallery.length ? product.gallery : fallbackThumbs;
 
@@ -216,6 +219,7 @@ export function ProductDetails() {
 
               <button
                 type="button"
+                disabled={!canAddToCart}
                 onClick={() =>
                   addToCartAndOpen({
                     id: `detail-${slug || product.name}`,
@@ -226,9 +230,9 @@ export function ProductDetails() {
                     qty,
                   })
                 }
-                className="pet-btn-primary mt-5 inline-flex h-11 w-full items-center justify-center text-[13px]"
+                className="pet-btn-primary mt-5 inline-flex h-11 w-full items-center justify-center text-[13px] disabled:cursor-not-allowed disabled:bg-muted"
               >
-                ADD TO CART
+                {canAddToCart ? 'ADD TO CART' : 'UNAVAILABLE'}
               </button>
             </aside>
           </div>
@@ -291,7 +295,7 @@ export function ProductDetails() {
               <div className="mt-6 text-[12px] leading-6 text-muted md:text-[13px]">
                 <p><span className="font-semibold text-ink">SKU:</span> {product.sku}</p>
                 <p className="mt-2"><span className="font-semibold text-ink">Category:</span> {product.category}</p>
-                <p className="mt-2"><span className="font-semibold text-ink">Base Price:</span> ${product.price.toFixed(2)}</p>
+                <p className="mt-2"><span className="font-semibold text-ink">Base Price:</span> {product.hasPrice ? product.formattedPrice : 'Price not set'}</p>
               </div>
             ) : null}
 

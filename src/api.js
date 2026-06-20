@@ -62,13 +62,15 @@ function firstPrice(product) {
       price: calculated,
       compareAt: original > calculated ? original : Number((calculated * 1.05).toFixed(2)),
       currencyCode,
+      hasPrice: true,
     };
   }
 
   return {
-    price: 0,
-    compareAt: 0,
+    price: null,
+    compareAt: null,
     currencyCode,
+    hasPrice: false,
   };
 }
 
@@ -101,8 +103,9 @@ function toLegacyProduct(product) {
     price: price.price,
     compare_at_price: price.compareAt,
     currency_code: price.currencyCode,
-    formatted_price: formatMoney(price.price, price.currencyCode),
-    formatted_compare_at_price: formatMoney(price.compareAt, price.currencyCode),
+    has_price: price.hasPrice,
+    formatted_price: price.hasPrice ? formatMoney(price.price, price.currencyCode) : 'Price not set',
+    formatted_compare_at_price: price.hasPrice ? formatMoney(price.compareAt, price.currencyCode) : '',
     variant_id: product.variants?.[0]?.id,
     variants: product.variants || [],
     category: { name: product?.categories?.[0]?.name || 'General' },

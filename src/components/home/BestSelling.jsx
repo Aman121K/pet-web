@@ -103,6 +103,7 @@ export function BestSelling() {
             compareAt: p.formatted_compare_at_price,
             price: p.formatted_price,
             rawPrice: p.price,
+            hasPrice: p.has_price,
             quantity: 1,
           }));
           setProducts(mapped);

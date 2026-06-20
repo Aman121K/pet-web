@@ -10,7 +10,7 @@ function calcSalePercent(compareAt, price) {
   return pct > 0 ? pct : null;
 }
 
-export function ProductCard({ id, variantId, slug, image, title, brand, compareAt, price, rawPrice, quantity = 1 }) {
+export function ProductCard({ id, variantId, slug, image, title, brand, compareAt, price, rawPrice, hasPrice = true, quantity = 1 }) {
   const [qty, setQty] = useState(quantity);
   const salePercent = calcSalePercent(compareAt, price);
   const fallbackSlug = String(title || 'product')
@@ -41,9 +41,11 @@ export function ProductCard({ id, variantId, slug, image, title, brand, compareA
           </Link>
           <p className="mt-6 text-[16px] font-semibold leading-[24px] text-muted">{brand}</p>
           <div className="mt-[7px] flex items-baseline gap-[10px]">
-            <span className="text-[18px] font-normal leading-[30px] text-muted line-through">
-              {compareAt}
-            </span>
+            {compareAt ? (
+              <span className="text-[18px] font-normal leading-[30px] text-muted line-through">
+                {compareAt}
+              </span>
+            ) : null}
             <span className="text-[18px] font-semibold leading-[30px] text-ink">{price}</span>
           </div>
         </div>
@@ -72,6 +74,7 @@ export function ProductCard({ id, variantId, slug, image, title, brand, compareA
           </div>
           <button
             type="button"
+            disabled={!hasPrice}
             onClick={() =>
               addToCartAndOpen({
                 id: to,
@@ -82,9 +85,9 @@ export function ProductCard({ id, variantId, slug, image, title, brand, compareA
                 qty,
               })
             }
-            className="flex h-[46px] w-[150px] items-center justify-center bg-ink text-[18px] font-semibold leading-none text-white transition hover:bg-[#333]"
+            className="flex h-[46px] w-[150px] items-center justify-center bg-ink text-[18px] font-semibold leading-none text-white transition hover:bg-[#333] disabled:cursor-not-allowed disabled:bg-muted"
           >
-            ADD TO CART
+            {hasPrice ? 'ADD TO CART' : 'UNAVAILABLE'}
           </button>
         </div>
       </div>
