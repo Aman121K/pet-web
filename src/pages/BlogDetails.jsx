@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { MailingList } from '../components/home/MailingList.jsx';
 import { fetchBlogBySlug } from '../api.js';
 import blog1 from '../assets/pets/home/blog-1.jpg';
+import { SeoHead } from '../components/SeoHead.jsx';
 
 function formatDate(value) {
   if (!value) return '';
@@ -40,9 +41,42 @@ export function BlogDetails() {
   const author = post?.authorName || 'Pet Square Team';
   const image = post?.featuredImageUrl || blog1;
   const imageAlt = post?.featuredImageAlt || title;
+  const canonical = `/blog/${slug}`;
+  const description =
+    post?.excerpt ||
+    `Read ${title} from Pet Square for practical pet care, shopping, nutrition, and product guidance.`;
+  const articleJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BlogPosting',
+    headline: title,
+    description,
+    image,
+    author: {
+      '@type': 'Person',
+      name: author,
+    },
+    publisher: {
+      '@type': 'Organization',
+      name: 'Pet Square',
+    },
+    datePublished: post?.publishedAt || post?.createdAt || undefined,
+    dateModified: post?.updatedAt || post?.publishedAt || post?.createdAt || undefined,
+    mainEntityOfPage: canonical,
+  };
 
   return (
     <>
+      <SeoHead
+        title={`${title} | Pet Square Blog`}
+        description={description}
+        keywords={`${category}, pet care, pet supplies, Pet Square`}
+        canonical={canonical}
+        ogTitle={title}
+        ogDescription={description}
+        ogImage={image}
+        ogType="article"
+        jsonLd={articleJsonLd}
+      />
       <section className="border-b border-line bg-[#f4f4f4]">
         <div className="mx-auto max-w-[1200px] px-4 py-2 text-[10px] text-muted">
           <Link to="/" className="hover:text-ink">Home</Link>

@@ -147,8 +147,8 @@ export function ProductDetails() {
         ogDescription={product.seoOgDescription || product.seoDescription}
         ogImage={product.seoOgImageUrl || product.image}
         ogType="product"
+        jsonLd={productJsonLd}
       />
-      <script type="application/ld+json">{JSON.stringify(productJsonLd)}</script>
 
       <FeatureBar />
 
