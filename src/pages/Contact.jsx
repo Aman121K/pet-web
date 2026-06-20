@@ -1,4 +1,6 @@
 import { MailingList } from '../components/home/MailingList.jsx';
+import { SeoHead } from '../components/SeoHead.jsx';
+import { pageSeo, useManagedPage } from '../hooks/useManagedPage.js';
 
 function ContactIconPin() {
   return (
@@ -40,8 +42,16 @@ function InfoCard({ icon, lines }) {
 }
 
 export function Contact() {
+  const page = useManagedPage('contact');
+  const seo = pageSeo(page, {
+    title: 'Contact Pet Square | Customer Support',
+    description: 'Contact Pet Square for order support, product questions, pet supply guidance, and business enquiries.',
+    canonical: '/contact',
+  });
+
   return (
     <>
+      <SeoHead {...seo} />
       <section className="border-b border-line bg-[#f4f4f4]">
         <div className="mx-auto max-w-[1200px] px-4 py-2 text-[10px] text-muted">
           Home <span className="px-2">&gt;</span> Contact US
@@ -67,9 +77,9 @@ export function Contact() {
             </aside>
 
             <div className="border border-line bg-white px-6 py-6 md:px-8">
-              <h1 className="text-[28px] font-semibold text-ink md:text-[38px]">Just Say Hello!</h1>
+              <h1 className="text-[28px] font-semibold text-ink md:text-[38px]">{page?.title || 'Just Say Hello!'}</h1>
               <p className="mt-2 text-[12px] text-muted md:text-[13px]">
-                Get in touch with our Customer Service team between 9am - 5pm Monday-Friday.
+                {page?.intro || 'Get in touch with our Customer Service team between 9am - 5pm Monday-Friday.'}
               </p>
 
               <div className="mt-5 space-y-2">

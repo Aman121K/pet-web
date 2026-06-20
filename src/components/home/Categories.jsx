@@ -3,11 +3,11 @@ import { Link } from 'react-router-dom';
 import { fetchCategories } from '../../api.js';
 
 const cats = [
-  { label: 'FOOD', icon: '/food.svg' },
-  { label: 'TOYS', icon: '/toys.svg' },
-  { label: 'BOND', icon: '/bond.svg' },
-  { label: 'CLOTHING', icon: '/clothing.svg' },
-  { label: 'ACCESSORIES', icon: '/accessories.svg' },
+  { label: 'Food', slug: 'food', icon: '/food.svg' },
+  { label: 'Toys', slug: 'toys', icon: '/toys.svg' },
+  { label: 'Care', slug: 'care', icon: '/bond.svg' },
+  { label: 'Clothing', slug: 'clothing', icon: '/clothing.svg' },
+  { label: 'Accessories', slug: 'accessories', icon: '/accessories.svg' },
 ];
 
 export function Categories() {
@@ -18,13 +18,18 @@ export function Categories() {
       .then((rows) => {
         if (Array.isArray(rows) && rows.length > 0) {
           const icons = ['/food.svg', '/toys.svg', '/bond.svg', '/clothing.svg', '/accessories.svg'];
-          setItems(
-            rows.slice(0, 6).map((category, index) => ({
+          const remote = rows.slice(0, 6).map((category, index) => ({
               label: category.name,
               slug: category.slug,
               icon: icons[index % icons.length],
-            }))
-          );
+            }));
+          const seen = new Set(remote.map((item) => String(item.slug || item.label).toLowerCase()));
+          const merged = [...remote];
+          cats.forEach((item) => {
+            const key = String(item.slug || item.label).toLowerCase();
+            if (!seen.has(key) && merged.length < 6) merged.push(item);
+          });
+          setItems(merged);
         }
       })
       .catch(() => {});

@@ -2,6 +2,8 @@ import { Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { fetchFaqs } from '../api.js';
 import product1 from '../assets/pets/product-1.jpg';
+import { SeoHead } from '../components/SeoHead.jsx';
+import { pageSeo, useManagedPage } from '../hooks/useManagedPage.js';
 
 const checkoutFaqs = [
   {
@@ -42,7 +44,9 @@ function CheckoutFaq() {
     fetchFaqs('checkout')
       .then((rows) => {
         if (Array.isArray(rows) && rows.length > 0) {
-          setItems(rows.map((row) => ({ question: row.question, answer: row.answer })));
+          const remote = rows.map((row) => ({ question: row.question, answer: row.answer }));
+          const seen = new Set(remote.map((item) => item.question));
+          setItems([...remote, ...checkoutFaqs.filter((item) => !seen.has(item.question))].slice(0, 5));
         }
       })
       .catch(() => {});
@@ -77,9 +81,19 @@ function CheckoutFaq() {
 }
 
 export function Checkout() {
+  const page = useManagedPage('checkout');
+  const seo = pageSeo(page, {
+    title: 'Checkout Help | Pet Square',
+    description: 'Review Pet Square checkout help for delivery, payment security, discounts, and cart updates.',
+    canonical: '/checkout',
+    robots: 'noindex,follow',
+  });
+
   return (
-    <section className="bg-surface py-6 md:py-10">
-      <div className="pet-page-shell">
+    <>
+      <SeoHead {...seo} />
+      <section className="bg-surface py-6 md:py-10">
+        <div className="pet-page-shell">
         <div className="overflow-hidden rounded-none border border-line bg-white lg:grid lg:grid-cols-[1.05fr_0.95fr]">
           <div className="border-b border-line p-5 md:p-7 lg:border-b-0 lg:border-r">
             <div className="rounded-none border border-line bg-surface px-4 py-4 text-[13px] text-muted">
@@ -129,8 +143,9 @@ export function Checkout() {
           </aside>
         </div>
 
-        <CheckoutFaq />
-      </div>
-    </section>
+          <CheckoutFaq />
+        </div>
+      </section>
+    </>
   );
 }

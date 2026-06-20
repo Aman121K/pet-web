@@ -7,6 +7,8 @@ import aboutIcon2 from '../assets/pets/about-icon-2.svg';
 import aboutIcon3 from '../assets/pets/about-icon-3.svg';
 import product2 from '../assets/pets/product-2.jpg';
 import product3 from '../assets/pets/product-3.jpg';
+import { SeoHead } from '../components/SeoHead.jsx';
+import { pageSeo, useManagedPage } from '../hooks/useManagedPage.js';
 
 const spotlightImages = [
   aboutPortrait,
@@ -16,33 +18,33 @@ const spotlightImages = [
 
 const values = [
   {
-    title: 'Best in Class',
-    text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed diam nonumy.',
+    title: 'Curated Range',
+    text: 'Products are organized around real pet routines so customers can shop with confidence.',
     iconSrc: aboutIcon0,
   },
   {
-    title: 'Authenticity',
-    text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed diam nonumy.',
+    title: 'Clear Information',
+    text: 'Every page is structured to make product comparison, support, and buying decisions easier.',
     iconSrc: aboutIcon1,
   },
   {
-    title: 'Email Support',
-    text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed diam nonumy.',
+    title: 'Helpful Support',
+    text: 'Customers can reach the team for product, order, delivery, and account questions.',
     iconSrc: aboutIcon2,
   },
   {
-    title: 'Discounts Available',
-    text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed diam nonumy.',
+    title: 'Fresh Content',
+    text: 'Blogs, banners, FAQs, page copy, and SEO can stay current from the Medusa admin panel.',
     iconSrc: aboutIcon3,
   },
   {
-    title: 'Powerful Marketing',
-    text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed diam nonumy.',
+    title: 'Reliable Shopping',
+    text: 'Simple navigation and clear calls to action help customers move from browsing to checkout.',
     iconSrc: aboutIcon0,
   },
   {
-    title: 'Inventory management',
-    text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed diam nonumy.',
+    title: 'Admin Control',
+    text: 'Products, categories, pricing, blogs, banners, and page SEO are connected to backend data.',
     iconSrc: aboutIcon1,
   },
 ];
@@ -57,8 +59,17 @@ const team = [
 ];
 
 export function About() {
+  const page = useManagedPage('about');
+  const seo = pageSeo(page, {
+    title: 'About Pet Square | Pet Supplies Store',
+    description: 'Learn about Pet Square, a pet supplies store focused on food, toys, care, accessories, and reliable shopping support.',
+    canonical: '/about',
+  });
+  const pageSections = page?.sections?.length ? page.sections : [];
+
   return (
     <>
+      <SeoHead {...seo} />
       <FeatureBar />
       <section className="border-b border-line bg-surface/40">
         <div className="mx-auto max-w-[1200px] px-4 py-3 text-[12px] text-muted sm:px-6 lg:px-8">
@@ -69,11 +80,10 @@ export function About() {
         <div className="mx-auto max-w-[1200px] px-4 py-12 sm:px-6 sm:py-14 md:py-20 lg:px-8">
           <header className="mx-auto max-w-[760px] text-center">
             <h1 className="text-[clamp(2rem,5vw,3.25rem)] font-semibold leading-[1.1] tracking-tight text-ink">
-              We are proud of our products
+              {page?.title || 'Built for Better Pet Shopping'}
             </h1>
             <p className="mx-auto mt-5 max-w-[680px] text-[14px] leading-7 text-muted sm:text-[15px]">
-              Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod
-              tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.
+              {page?.intro || 'Pet Square helps customers find practical food, toys, care products, bedding, and accessories with a cleaner shopping flow.'}
             </p>
           </header>
 
@@ -93,12 +103,10 @@ export function About() {
           <section className="mx-auto mt-14 max-w-[760px] text-center sm:mt-16">
             <p className="text-[13px] text-muted">Our Story</p>
             <h2 className="mt-2 text-[clamp(1.8rem,4vw,2.75rem)] font-semibold leading-[1.1] tracking-tight text-ink">
-              We&apos;re a team of data analysts
+              A practical pet commerce experience
             </h2>
             <p className="mt-5 text-[14px] leading-7 text-muted sm:text-[15px]">
-              Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod
-              tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero
-              eos et accusam et justo duo dolores et ea rebum.
+              {pageSections[0]?.body || 'Our store is designed around clear categories, useful product education, and content that can be updated from the backend without slowing down day-to-day operations.'}
             </p>
           </section>
 
@@ -106,23 +114,19 @@ export function About() {
             <article className="rounded-sm border border-line bg-white p-6 shadow-[0_10px_30px_rgba(0,0,0,0.03)] sm:p-8 md:p-10">
               <p className="text-[13px] text-muted">Our Goals</p>
               <h3 className="mt-3 text-[clamp(1.6rem,3.3vw,2.4rem)] font-semibold leading-[1.12] tracking-tight text-ink">
-                To upscale your business to the next level
+                {pageSections[1]?.heading || 'Our Promise'}
               </h3>
               <p className="mt-4 text-[14px] leading-7 text-muted sm:text-[15px]">
-                Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod
-                tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At
-                vero eos et accusam et justo duo dolores et ea rebum.
+                {pageSections[1]?.body || 'Make pet shopping easier with clear categories, useful product information, and dependable support.'}
               </p>
             </article>
             <article className="rounded-sm border border-line bg-white p-6 shadow-[0_10px_30px_rgba(0,0,0,0.03)] sm:p-8 md:p-10">
               <p className="text-[13px] text-muted">Our Vision</p>
               <h3 className="mt-3 text-[clamp(1.6rem,3.3vw,2.4rem)] font-semibold leading-[1.12] tracking-tight text-ink">
-                To provide solutions for growing companies
+                {pageSections[2]?.heading || 'Our Product Standard'}
               </h3>
               <p className="mt-4 text-[14px] leading-7 text-muted sm:text-[15px]">
-                Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod
-                tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At
-                vero eos et accusam et justo duo dolores et ea rebum.
+                {pageSections[2]?.body || 'Keep product ranges organized, practical, and easy for customers to compare before they buy.'}
               </p>
             </article>
           </section>
@@ -132,7 +136,7 @@ export function About() {
               Our corporate values
             </h2>
             <p className="mx-auto mt-4 max-w-[680px] text-[14px] text-muted sm:text-[15px]">
-              Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy.
+              Practical standards that make the storefront feel consistent, trustworthy, and easier to manage.
             </p>
             <div className="mt-8 grid gap-4 rounded-sm bg-[#EFEFEF] p-5 text-left sm:mt-10 sm:grid-cols-2 sm:gap-5 sm:p-8 lg:grid-cols-3">
               {values.map((value) => (
@@ -151,8 +155,7 @@ export function About() {
                 Our talented Team
               </h2>
               <p className="mt-4 text-[14px] leading-7 text-muted sm:text-[15px]">
-                Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod
-                tempor invidunt ut labore.
+                A compact operating team can keep the storefront current through Medusa-managed products, blogs, pages, FAQs, and SEO.
               </p>
             </div>
             <div className="mt-8 grid gap-4 sm:mt-10 sm:grid-cols-2 sm:gap-5 lg:grid-cols-3">

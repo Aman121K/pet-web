@@ -10,12 +10,28 @@ import { PopularBlogs } from '../components/home/PopularBlogs.jsx';
 import { MailingList } from '../components/home/MailingList.jsx';
 import { fetchBanners } from '../api.js';
 import { Link } from 'react-router-dom';
+import { SeoHead } from '../components/SeoHead.jsx';
+import { pageSeo, useManagedPage } from '../hooks/useManagedPage.js';
 
 const heroImage =
   '/fluffy-dog-sitting-blue-home-workout-instruments-with-several-dumbbells-around.png';
 
 export function Home() {
   const [banner, setBanner] = useState(null);
+  const page = useManagedPage('home');
+  const seo = pageSeo(page, {
+    title: 'Pet Square | Pet Food, Toys, Care & Accessories',
+    description: 'Shop food, care, toys, bedding, and accessories for every pet routine at Pet Square.',
+    canonical: '/',
+  });
+  const sections = page?.sections?.length
+    ? page.sections.slice(0, 4)
+    : [
+        { heading: 'Curated by Pet Type', body: 'Browse essentials for dogs, cats, birds, fish, and small pets.' },
+        { heading: 'Everyday Staples', body: 'Keep food, toys, grooming, and bedding easy to discover.' },
+        { heading: 'Admin Managed', body: 'Products, categories, blogs, FAQs, banners, and SEO come from Medusa.' },
+        { heading: 'Reliable Shopping', body: 'Clear product cards and category paths help customers move faster.' },
+      ];
 
   useEffect(() => {
     fetchBanners('home-hero')
@@ -25,6 +41,7 @@ export function Home() {
 
   return (
     <>
+      <SeoHead {...seo} />
       <section className="border-b border-line bg-surface py-4 md:py-6">
         <div className="pet-page-shell">
           <div className="overflow-hidden border border-line bg-white md:grid md:min-h-[560px] md:grid-cols-[58%_42%]">
@@ -45,6 +62,14 @@ export function Home() {
                 >
                   {String(banner?.ctaText || 'SHOP NOW').toUpperCase()}
                 </Link>
+                <div className="mt-8 grid max-w-[560px] grid-cols-2 gap-3 text-white/80 sm:grid-cols-4">
+                  {['Products', 'Categories', 'Blogs', 'FAQs'].map((label) => (
+                    <div key={label} className="border border-white/20 px-3 py-3">
+                      <p className="text-[18px] font-semibold text-white">4+</p>
+                      <p className="mt-1 text-[11px] uppercase tracking-[0.08em]">{label}</p>
+                    </div>
+                  ))}
+                </div>
               </div>
 
               <div className="relative z-10 mt-6 flex items-center gap-2 md:mt-8">
@@ -62,6 +87,18 @@ export function Home() {
                 className="relative z-10 h-auto w-[410px] max-w-none object-contain sm:w-[480px] md:w-[560px]"
               />
             </div>
+          </div>
+        </div>
+      </section>
+      <section className="border-b border-line bg-white py-12">
+        <div className="pet-page-shell">
+          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+            {sections.map((section) => (
+              <article key={section.heading} className="border border-line bg-surface p-5">
+                <h2 className="text-[18px] font-semibold leading-tight text-ink">{section.heading}</h2>
+                <p className="mt-3 text-[13px] leading-6 text-muted">{section.body}</p>
+              </article>
+            ))}
           </div>
         </div>
       </section>

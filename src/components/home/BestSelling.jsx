@@ -108,7 +108,7 @@ export function BestSelling() {
             hasPrice: p.has_price,
             quantity: 1,
           }));
-          setProducts(mapped);
+          setProducts([...mapped, ...FALLBACK_PRODUCTS].slice(0, Math.max(6, mapped.length)));
         }
       })
       .catch(() => {});

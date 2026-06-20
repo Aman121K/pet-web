@@ -1,11 +1,27 @@
 import { FeatureBar } from '../components/FeatureBar.jsx';
 import { useEffect, useState } from 'react';
 import { fetchFaqs } from '../api.js';
+import { SeoHead } from '../components/SeoHead.jsx';
+import { pageSeo, useManagedPage } from '../hooks/useManagedPage.js';
+
+const fallbackFaqs = [
+  { q: 'Where do FAQs come from?', a: 'FAQs are managed from the Pages section in Medusa admin.' },
+  { q: 'Can each page have different FAQs?', a: 'Yes. Checkout, category, blog, and other pages can each have their own FAQ set.' },
+  { q: 'Can I edit FAQ SEO?', a: 'Yes. Edit the SEO object on the faq page in Medusa Pages.' },
+  { q: 'How many FAQs should I add?', a: 'Use at least four to five useful FAQs for important pages.' },
+  { q: 'Can FAQ content be updated without code?', a: 'Yes. Admin users can update FAQ content directly from Medusa.' },
+];
 
 export function Faq() {
-  const [items, setItems] = useState([]);
+  const [items, setItems] = useState(fallbackFaqs);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
+  const page = useManagedPage('faq');
+  const seo = pageSeo(page, {
+    title: 'Pet Square FAQs | Delivery, Returns, Orders & Products',
+    description: 'Find answers to common Pet Square questions about products, delivery, returns, checkout, and support.',
+    canonical: '/faq',
+  });
 
   useEffect(() => {
     let mounted = true;
@@ -13,12 +29,12 @@ export function Faq() {
       try {
         const rows = await fetchFaqs();
         if (mounted) {
-          setItems(
-            (Array.isArray(rows) ? rows : []).map((row) => ({
+          const remote = (Array.isArray(rows) ? rows : []).map((row) => ({
               q: row.question || '',
               a: row.answer || '',
-            }))
-          );
+            }));
+          const seen = new Set(remote.map((item) => item.q));
+          setItems([...remote, ...fallbackFaqs.filter((item) => !seen.has(item.q))].slice(0, 8));
         }
       } catch (err) {
         if (mounted) setError(err.message || 'Failed to load FAQs');
@@ -33,6 +49,7 @@ export function Faq() {
 
   return (
     <>
+      <SeoHead {...seo} />
       <FeatureBar />
       <section className="bg-[#F5F5F5]">
         <div className="mx-auto max-w-[980px] px-4 py-12 sm:px-6 sm:py-14 lg:px-8 lg:py-16">

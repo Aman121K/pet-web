@@ -146,6 +146,7 @@ export function ProductDetails() {
         ogTitle={product.seoOgTitle || product.seoTitle}
         ogDescription={product.seoOgDescription || product.seoDescription}
         ogImage={product.seoOgImageUrl || product.image}
+        ogType="product"
       />
       <script type="application/ld+json">{JSON.stringify(productJsonLd)}</script>
 

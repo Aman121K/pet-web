@@ -12,6 +12,8 @@ import product1 from '../assets/pets/product-1.jpg';
 import product3 from '../assets/pets/product-3.jpg';
 import pick1 from '../assets/pets/home/pick-1.jpg';
 import pick2 from '../assets/pets/home/pick-2.jpg';
+import { SeoHead } from '../components/SeoHead.jsx';
+import { pageSeo, useManagedPage } from '../hooks/useManagedPage.js';
 
 const baseCards = [
   { id: 1, image: pick1, sale: 35, title: 'Platinum Open Victorian Top with Plastic Base Bird Cage', brand: 'Canagan', compareAt: 222.74, price: 221.0, rating: 4.3, category: 'dog' },
@@ -237,7 +239,9 @@ function CategoryFaq() {
     fetchFaqs('category')
       .then((rows) => {
         if (Array.isArray(rows) && rows.length > 0) {
-          setItems(rows.map((row) => ({ question: row.question, answer: row.answer })));
+          const remote = rows.map((row) => ({ question: row.question, answer: row.answer }));
+          const seen = new Set(remote.map((item) => item.question));
+          setItems([...remote, ...categoryFaqs.filter((item) => !seen.has(item.question))].slice(0, 5));
         }
       })
       .catch(() => {});
@@ -299,6 +303,12 @@ export function Shop() {
   const [priceRange, setPriceRange] = useState('all');
   const [rating, setRating] = useState('all');
   const [sortBy, setSortBy] = useState('latest');
+  const page = useManagedPage('shop');
+  const seo = pageSeo(page, {
+    title: 'Shop Pet Supplies | Pet Square',
+    description: 'Browse pet food, toys, care products, bedding, and accessories by category at Pet Square.',
+    canonical: '/shop',
+  });
   const selectedCategory = getShopCategory(category);
 
   useEffect(() => {
@@ -322,8 +332,9 @@ export function Shop() {
             rating: 5,
             category: String(p.category?.name || '').toLowerCase(),
           }));
-          setProducts(mapped);
-          setQtyById(Object.fromEntries(mapped.map((c) => [c.id, 1])));
+          const merged = [...mapped, ...baseCards].slice(0, Math.max(12, mapped.length));
+          setProducts(merged);
+          setQtyById(Object.fromEntries(merged.map((c) => [c.id, 1])));
         }
       })
       .catch(() => {});
@@ -351,14 +362,14 @@ export function Shop() {
           r.category.includes(selectedCategory.productFilter)
       );
     }
-    if (priceRange === 'low') rows = rows.filter((r) => r.price < 210);
-    if (priceRange === 'mid') rows = rows.filter((r) => r.price >= 210 && r.price <= 216);
-    if (priceRange === 'high') rows = rows.filter((r) => r.price > 216);
+    if (priceRange === 'low') rows = rows.filter((r) => Number(r.price) < 210);
+    if (priceRange === 'mid') rows = rows.filter((r) => Number(r.price) >= 210 && Number(r.price) <= 216);
+    if (priceRange === 'high') rows = rows.filter((r) => Number(r.price) > 216);
     if (rating !== 'all') rows = rows.filter((r) => r.rating >= Number(rating));
 
-    if (sortBy === 'latest') rows.sort((a, b) => b.id - a.id);
-    if (sortBy === 'priceLow') rows.sort((a, b) => a.price - b.price);
-    if (sortBy === 'priceHigh') rows.sort((a, b) => b.price - a.price);
+    if (sortBy === 'latest') rows.sort((a, b) => String(b.id).localeCompare(String(a.id)));
+    if (sortBy === 'priceLow') rows.sort((a, b) => Number(a.price || 0) - Number(b.price || 0));
+    if (sortBy === 'priceHigh') rows.sort((a, b) => Number(b.price || 0) - Number(a.price || 0));
     if (sortBy === 'ratingHigh') rows.sort((a, b) => b.rating - a.rating);
     return rows;
   }, [products, selectedCategory.productFilter, priceRange, rating, sortBy]);
@@ -367,6 +378,7 @@ export function Shop() {
 
   return (
     <>
+      <SeoHead {...seo} />
       <FeatureBar />
 
       <section className="border-b border-line bg-surface py-2">

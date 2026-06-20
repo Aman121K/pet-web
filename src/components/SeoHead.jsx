@@ -22,23 +22,44 @@ function upsertCanonical(url) {
   link.setAttribute('href', url);
 }
 
-export function SeoHead({ title, description, keywords, canonical, robots, ogTitle, ogDescription, ogImage }) {
+function absoluteUrl(url) {
+  if (!url) return '';
+
+  try {
+    return new URL(url, window.location.origin).toString();
+  } catch (err) {
+    return url;
+  }
+}
+
+export function SeoHead({
+  title,
+  description,
+  keywords,
+  canonical,
+  robots,
+  ogTitle,
+  ogDescription,
+  ogImage,
+  ogType = 'website',
+}) {
   useEffect(() => {
     const oldTitle = document.title;
     if (title) document.title = title;
     upsertMeta('name', 'description', description);
     upsertMeta('name', 'keywords', keywords);
     upsertMeta('name', 'robots', robots || 'index,follow');
-    upsertMeta('property', 'og:type', 'product');
+    upsertMeta('property', 'og:type', ogType);
     upsertMeta('property', 'og:title', ogTitle || title);
     upsertMeta('property', 'og:description', ogDescription || description);
-    upsertMeta('property', 'og:image', ogImage);
-    upsertCanonical(canonical);
+    upsertMeta('property', 'og:image', absoluteUrl(ogImage));
+    upsertMeta('property', 'og:url', absoluteUrl(canonical || window.location.pathname));
+    upsertCanonical(absoluteUrl(canonical || window.location.pathname));
 
     return () => {
       document.title = oldTitle;
     };
-  }, [title, description, keywords, canonical, robots, ogTitle, ogDescription, ogImage]);
+  }, [title, description, keywords, canonical, robots, ogTitle, ogDescription, ogImage, ogType]);
 
   return null;
 }

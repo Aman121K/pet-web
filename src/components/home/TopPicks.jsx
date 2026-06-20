@@ -96,8 +96,7 @@ export function TopPicks() {
     fetchProducts()
       .then((items) => {
         if (items && items.length > 0) {
-          setProducts(
-            items.slice(0, 8).map((p, i) => ({
+          const remote = items.slice(0, 8).map((p, i) => ({
               id: String(p.id),
               variantId: p.variant_id,
               slug: p.slug,
@@ -110,8 +109,8 @@ export function TopPicks() {
               rawPrice: p.price,
               hasPrice: p.has_price,
               quantity: 1,
-            }))
-          );
+            }));
+          setProducts([...remote, ...picks].slice(0, Math.max(6, remote.length)));
         }
       })
       .catch(() => {});

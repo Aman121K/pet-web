@@ -88,11 +88,19 @@ export function FaqBlock() {
     fetchFaqs('home')
       .then((rows) => {
         if (Array.isArray(rows) && rows.length > 0) {
+          const remote = rows.map((row, index) => ({
+            q: `${index + 1}. ${row.question || ''}`,
+            a: row.answer || '',
+          }));
+          const seen = new Set(remote.map((item) => item.q.replace(/^\d+\.\s*/, '')));
+          const fill = items
+            .filter((item) => !seen.has(item.q.replace(/^\d+\.\s*/, '')))
+            .map((item, index) => ({
+              ...item,
+              q: `${remote.length + index + 1}. ${item.q.replace(/^\d+\.\s*/, '')}`,
+            }));
           setFaqItems(
-            rows.slice(0, 3).map((row, index) => ({
-              q: `${index + 1}. ${row.question || ''}`,
-              a: row.answer || '',
-            }))
+            [...remote, ...fill].slice(0, 4)
           );
           setOpenIdx(0);
         }

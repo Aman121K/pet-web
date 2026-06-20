@@ -5,6 +5,7 @@ import { fetchBlogs } from '../../api.js';
 import blog1 from '../../assets/pets/home/blog-1.jpg';
 import blog2 from '../../assets/pets/home/blog-2.jpg';
 import blog3 from '../../assets/pets/home/blog-3.jpg';
+import product1 from '../../assets/pets/product-1.jpg';
 
 /* ─── Data ──────────────────────────────────────────────────────────────── */
 const fallbackPosts = [
@@ -35,6 +36,15 @@ const fallbackPosts = [
     date: 'April 10, 2025',
     img: blog3,
   },
+  {
+    slug: 'choosing-pet-toys',
+    title: 'Choosing safer pet toys',
+    description:
+      "How to pick toys that match your pet's size, chewing style, energy level, and daily routine.",
+    author: 'Pet Square Team',
+    date: 'Mar 24, 2025',
+    img: product1,
+  },
 ];
 
 function formatDate(value) {
@@ -50,7 +60,14 @@ function BlogCard({ slug, title, description, author, date, img }) {
     <article className="group flex flex-col border border-ink shadow-[0_4px_4px_rgba(0,0,0,0.25)]">
       {/* Image */}
       <div className="h-[265px] flex-none overflow-hidden">
-        <img src={img} alt={title} className="h-full w-full object-cover" />
+        <img
+          src={img}
+          alt={title}
+          className="h-full w-full object-cover"
+          onError={(event) => {
+            if (event.currentTarget.src !== blog1) event.currentTarget.src = blog1;
+          }}
+        />
       </div>
 
       {/* Content */}
@@ -117,7 +134,7 @@ export function PopularBlogs() {
     (async () => {
       try {
         const rows = await fetchBlogs();
-        if (mounted) setRemotePosts(Array.isArray(rows) ? rows.slice(0, 3) : []);
+        if (mounted) setRemotePosts(Array.isArray(rows) ? rows.slice(0, 4) : []);
       } catch (err) {
         if (mounted) setRemotePosts([]);
       }
@@ -131,9 +148,9 @@ export function PopularBlogs() {
   const posts = useMemo(() => {
     if (!remotePosts.length) return fallbackPosts;
 
-    const fallbackImages = [blog1, blog2, blog3];
+    const fallbackImages = [blog1, blog2, blog3, product1];
 
-    return remotePosts.map((post, index) => ({
+    const remote = remotePosts.map((post, index) => ({
       slug: post.slug,
       title: post.title,
       description: post.excerpt,
@@ -141,6 +158,9 @@ export function PopularBlogs() {
       date: formatDate(post.publishedAt || post.createdAt),
       img: post.featuredImageUrl || fallbackImages[index % fallbackImages.length],
     }));
+    const seen = new Set(remote.map((post) => post.slug));
+    const fill = fallbackPosts.filter((post) => !seen.has(post.slug));
+    return [...remote, ...fill].slice(0, 4);
   }, [remotePosts]);
 
   return (
@@ -154,7 +174,7 @@ export function PopularBlogs() {
           </h2>
 
           {/* Cards Grid */}
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-4">
             {posts.map((post) => (
               <BlogCard key={post.slug} {...post} />
             ))}
