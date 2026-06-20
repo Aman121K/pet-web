@@ -74,6 +74,20 @@ function firstPrice(product) {
   };
 }
 
+function medusaAssetUrl(url) {
+  if (!url) return '';
+
+  try {
+    const asset = new URL(url);
+    if (asset.hostname === 'localhost' || asset.hostname === '127.0.0.1') {
+      return `${MEDUSA_URL}${asset.pathname}${asset.search}`;
+    }
+    return asset.toString();
+  } catch (err) {
+    return url.startsWith('/') ? `${MEDUSA_URL}${url}` : url;
+  }
+}
+
 export function formatMoney(amount, currencyCode = 'NZD') {
   const value = Number(amount || 0);
 
@@ -89,7 +103,7 @@ export function formatMoney(amount, currencyCode = 'NZD') {
 
 function toLegacyProduct(product) {
   const price = firstPrice(product);
-  const image = product?.thumbnail || product?.images?.[0]?.url || '';
+  const image = medusaAssetUrl(product?.thumbnail || product?.images?.[0]?.url || '');
 
   return {
     id: product.id,
@@ -98,7 +112,7 @@ function toLegacyProduct(product) {
     description: product.description || '',
     image_url: image,
     imageAltText: product.title,
-    gallery: (product.images || []).map((x) => x.url).filter(Boolean),
+    gallery: (product.images || []).map((x) => medusaAssetUrl(x.url)).filter(Boolean),
     brand: product.brand || 'Pet Square',
     price: price.price,
     compare_at_price: price.compareAt,
