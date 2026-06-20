@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { ArrowLeft, ArrowRight, ArrowUpRight } from 'lucide-react';
 import pick1 from '../../assets/pets/home/pick-1.jpg';
 import pick2 from '../../assets/pets/home/pick-2.jpg';
@@ -133,13 +134,13 @@ export function TopPicks() {
       <div className="relative mx-auto flex h-full max-w-[1440px] flex-col items-center px-4 py-12 xl:px-12 xl:py-24">
         <SectionHeading>Our top picks for your pets</SectionHeading>
 
-        <button
-          type="button"
+        <Link
+          to="/shop"
           className="mt-5 flex h-[42px] w-[128px] items-center justify-center gap-[8px] text-[13px] font-semibold leading-[16px] tracking-normal text-ink transition hover:text-black xl:absolute xl:right-[74px] xl:top-[98px] xl:mt-0"
         >
           <span className="underline underline-offset-2">View all</span>
           <ArrowUpRight aria-hidden size={13} strokeWidth={1.8} />
-        </button>
+        </Link>
 
         <div className="mt-8 flex w-full flex-col items-center md:hidden">
           <ProductCard {...products[activeIndex % products.length]} />

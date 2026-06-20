@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { ArrowLeft, ArrowRight, ArrowUpRight } from 'lucide-react';
 import { ProductCard } from './ProductCard.jsx';
 import { SectionHeading } from './SectionHeading.jsx';
@@ -130,13 +131,13 @@ export function BestSelling() {
 
         <SectionHeading>Best-Selling Products</SectionHeading>
 
-        <button
-          type="button"
+        <Link
+          to="/shop"
           className="mt-5 flex h-[42px] items-center justify-center gap-[10px] text-[13px] font-semibold leading-[16px] text-ink transition hover:text-black xl:absolute xl:right-[74px] xl:top-[98px] xl:mt-0"
         >
           <span className="underline underline-offset-2">View all</span>
           <ArrowUpRight aria-hidden size={13} strokeWidth={1.8} />
-        </button>
+        </Link>
 
         <div className="mt-8 flex w-full flex-col items-center md:hidden">
           <ProductCard {...products[activeIndex % products.length]} />
