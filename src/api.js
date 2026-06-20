@@ -3,8 +3,11 @@ const PUBLISHABLE_KEY = import.meta.env.VITE_MEDUSA_PUBLISHABLE_KEY || '';
 const LEGACY_API = (import.meta.env.VITE_LEGACY_API_URL || '').replace(/\/+$/, '').replace(/\/health$/, '');
 
 const USER_TOKEN_KEY = 'pet-user-token';
+const GET_CACHE_TTL_MS = 60_000;
 
 let cachedRegionId = null;
+let regionIdPromise = null;
+const getCache = new Map();
 
 function ensurePublishableKey() {
   if (!PUBLISHABLE_KEY) {
@@ -13,6 +16,21 @@ function ensurePublishableKey() {
 }
 
 async function medusaFetch(path, options = {}, { auth = false, publishable = false } = {}) {
+  const method = String(options.method || 'GET').toUpperCase();
+  const canCache = method === 'GET' && !auth && !options.body;
+  const cacheKey = canCache ? `${publishable ? 'pk' : 'open'}:${path}` : '';
+  const now = Date.now();
+
+  if (canCache) {
+    const cached = getCache.get(cacheKey);
+    if (cached && cached.expiresAt > now) {
+      return cached.promise;
+    }
+    if (cached) {
+      getCache.delete(cacheKey);
+    }
+  }
+
   const headers = { ...(options.headers || {}) };
 
   if (publishable) {
@@ -30,23 +48,49 @@ async function medusaFetch(path, options = {}, { auth = false, publishable = fal
     headers['Content-Type'] = 'application/json';
   }
 
-  const res = await fetch(`${MEDUSA_URL}${path}`, { ...options, headers });
-  const data = await res.json().catch(() => ({}));
+  const request = fetch(`${MEDUSA_URL}${path}`, { ...options, headers })
+    .then(async (res) => {
+      const data = await res.json().catch(() => ({}));
 
-  if (!res.ok) {
-    throw new Error(data?.message || data?.error || 'Request failed');
+      if (!res.ok) {
+        throw new Error(data?.message || data?.error || 'Request failed');
+      }
+
+      return data;
+    })
+    .catch((err) => {
+      if (canCache) {
+        getCache.delete(cacheKey);
+      }
+      throw err;
+    });
+
+  if (canCache) {
+    getCache.set(cacheKey, {
+      promise: request,
+      expiresAt: now + GET_CACHE_TTL_MS,
+    });
   }
 
-  return data;
+  return request;
 }
 
 async function getRegionId() {
   if (cachedRegionId) return cachedRegionId;
-  const data = await medusaFetch('/store/regions?limit=1', {}, { publishable: true });
-  const region = data?.regions?.[0];
-  if (!region?.id) throw new Error('No Medusa region found. Seed or create a region first.');
-  cachedRegionId = region.id;
-  return cachedRegionId;
+  if (!regionIdPromise) {
+    regionIdPromise = medusaFetch('/store/regions?limit=1', {}, { publishable: true })
+      .then((data) => {
+        const region = data?.regions?.[0];
+        if (!region?.id) throw new Error('No Medusa region found. Seed or create a region first.');
+        cachedRegionId = region.id;
+        return cachedRegionId;
+      })
+      .catch((err) => {
+        regionIdPromise = null;
+        throw err;
+      });
+  }
+  return regionIdPromise;
 }
 
 function firstPrice(product) {
