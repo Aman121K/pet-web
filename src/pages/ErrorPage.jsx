@@ -1,8 +1,15 @@
 import { Link } from 'react-router-dom';
+import { SeoHead } from '../components/SeoHead.jsx';
 
 export function ErrorPage() {
   return (
     <>
+      <SeoHead
+        title="Page Not Found | Pet Square"
+        description="The Pet Square page you requested could not be found."
+        canonical="/404"
+        robots="noindex,nofollow"
+      />
       <section className="border-b border-line bg-[#f4f4f4]">
         <div className="mx-auto max-w-[1200px] px-4 py-2 text-[10px] text-muted">
           Home <span className="px-2">&gt;</span> 404

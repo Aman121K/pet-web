@@ -1,8 +1,15 @@
 import { MailingList } from '../components/home/MailingList.jsx';
+import { SeoHead } from '../components/SeoHead.jsx';
 
 export function OrderConfirmation() {
   return (
     <>
+      <SeoHead
+        title="Order Confirmation | Pet Square"
+        description="Your Pet Square order confirmation and next steps."
+        canonical="/order-confirmation"
+        robots="noindex,follow"
+      />
       <section className="border-b border-line bg-[#f4f4f4]">
         <div className="mx-auto max-w-[1200px] px-4 py-2 text-[10px] text-muted">
           Home <span className="px-1">&gt;</span> Shopping cart <span className="px-1">&gt;</span>{' '}

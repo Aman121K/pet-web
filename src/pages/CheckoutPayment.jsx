@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { SeoHead } from '../components/SeoHead.jsx';
 
 function Field({ label, placeholder }) {
   return (
@@ -14,8 +15,15 @@ function Field({ label, placeholder }) {
 
 export function CheckoutPayment() {
   return (
-    <section className="bg-[#efefef] py-6 md:py-10">
-      <div className="mx-auto max-w-[900px] border border-line bg-white p-4 md:p-6">
+    <>
+      <SeoHead
+        title="Payment | Pet Square Checkout"
+        description="Enter payment information to complete your Pet Square checkout."
+        canonical="/checkout/payment"
+        robots="noindex,follow"
+      />
+      <section className="bg-[#efefef] py-6 md:py-10">
+        <div className="mx-auto max-w-[900px] border border-line bg-white p-4 md:p-6">
         <h1 className="text-[18px] font-semibold text-ink">Payment information</h1>
         <p className="mt-1 text-[12px] text-muted">Step 2 of 3</p>
 
@@ -35,7 +43,8 @@ export function CheckoutPayment() {
             PAY NOW
           </Link>
         </div>
-      </div>
-    </section>
+        </div>
+      </section>
+    </>
   );
 }

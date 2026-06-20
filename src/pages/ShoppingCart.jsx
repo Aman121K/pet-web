@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { MailingList } from '../components/home/MailingList.jsx';
+import { SeoHead } from '../components/SeoHead.jsx';
 import product1 from '../assets/pets/product-1.jpg';
 import product2 from '../assets/pets/product-2.jpg';
 
@@ -13,6 +14,12 @@ export function ShoppingCart() {
 
   return (
     <>
+      <SeoHead
+        title="Shopping Cart | Pet Square"
+        description="Review your Pet Square shopping cart before checkout."
+        canonical="/cart"
+        robots="noindex,follow"
+      />
       <section className="border-b border-line bg-surface">
         <div className="pet-page-shell py-2 text-[12px] text-muted">Home / Shopping cart</div>
       </section>

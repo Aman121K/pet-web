@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import { registerCustomer, setUserToken } from '../api.js';
 import { FeatureBar } from '../components/FeatureBar.jsx';
+import { SeoHead } from '../components/SeoHead.jsx';
 
 function Field({ id, label, type = 'text', placeholder, value, onChange }) {
   return (
@@ -57,6 +58,12 @@ export function Signup() {
 
   return (
     <>
+      <SeoHead
+        title="Create Account | Pet Square"
+        description="Create a Pet Square account for faster checkout, order tracking, and saved pet shopping preferences."
+        canonical="/signup"
+        robots="noindex,follow"
+      />
       <FeatureBar />
       <section className="bg-gradient-to-b from-surface to-white px-4 py-10 sm:px-6 lg:px-8 lg:py-14">
         <div className="mx-auto w-full max-w-[720px] rounded-none border border-line bg-white p-6 shadow-[0_20px_70px_rgba(17,17,17,0.08)] sm:p-8 lg:p-10">

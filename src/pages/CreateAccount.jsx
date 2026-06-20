@@ -1,9 +1,16 @@
 import { Link } from 'react-router-dom';
 import { FeatureBar } from '../components/FeatureBar.jsx';
+import { SeoHead } from '../components/SeoHead.jsx';
 
 export function CreateAccount() {
   return (
     <>
+      <SeoHead
+        title="Create Account | Pet Square"
+        description="Create your Pet Square profile to save delivery addresses, track packages, and manage pet care preferences."
+        canonical="/create-account"
+        robots="noindex,follow"
+      />
       <FeatureBar />
       <section className="mx-auto max-w-[860px] px-4 py-12 text-center sm:px-6 lg:px-8">
         <div className="rounded-2xl border border-line bg-surface p-8 sm:p-10">
