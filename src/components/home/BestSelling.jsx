@@ -95,6 +95,7 @@ export function BestSelling() {
         if (items && items.length > 0) {
           const mapped = items.map((p, i) => ({
             id: String(p.id),
+            variantId: p.variant_id,
             slug: p.slug,
             image: p.image_url || FALLBACK_PRODUCTS[i % FALLBACK_PRODUCTS.length].image,
             title: p.name,

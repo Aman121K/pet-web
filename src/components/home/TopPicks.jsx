@@ -98,6 +98,7 @@ export function TopPicks() {
           setProducts(
             items.slice(0, 8).map((p, i) => ({
               id: String(p.id),
+              variantId: p.variant_id,
               slug: p.slug,
               image: p.image_url || picks[i % picks.length].image,
               title: p.name,

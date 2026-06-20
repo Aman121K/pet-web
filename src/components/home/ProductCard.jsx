@@ -10,7 +10,7 @@ function calcSalePercent(compareAt, price) {
   return pct > 0 ? pct : null;
 }
 
-export function ProductCard({ id, slug, image, title, brand, compareAt, price, rawPrice, quantity = 1 }) {
+export function ProductCard({ id, variantId, slug, image, title, brand, compareAt, price, rawPrice, quantity = 1 }) {
   const [qty, setQty] = useState(quantity);
   const salePercent = calcSalePercent(compareAt, price);
   const fallbackSlug = String(title || 'product')
@@ -77,7 +77,7 @@ export function ProductCard({ id, slug, image, title, brand, compareAt, price, r
                 id: to,
                 title,
                 image,
-                variant_id: id,
+                variant_id: variantId,
                 price: Number(rawPrice) || parseFloat(String(price).replace(/[^0-9.]/g, '')) || 0,
                 qty,
               })
